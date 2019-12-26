@@ -5,11 +5,11 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>uy.com.demente.ideas</groupId>
-	<artifactId>pagantis-pagacoins-backend</artifactId>
+	<groupId>uy.com.demente.ideas.wallets</groupId>
+	<artifactId>wallets-core</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>pagacoins-backend</name>
-	<description>Pagantis-Pagacoins API REST [Backend]</description>
+	<name>Wallets-Core</name>
+	<description>Wallets-Core</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -121,7 +121,7 @@
 	<!-- *** Build *** -->
 	<!-- ************* -->
 	<build>
-		<finalName>pagantis-pagacoins</finalName>
+		<finalName>wallets-core</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
