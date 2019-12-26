@@ -1,4 +1,4 @@
 #!/bin/bash
-echo "Ejecutando Pagantis Pagacoin Backend"
+echo "Ejecutando Wallets Core"
 cd ./target/
-java -jar pagantis-pagacoins.jar
+java -jar wallets-core.jar
