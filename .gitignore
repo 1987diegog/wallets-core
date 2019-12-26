@@ -6,4 +6,5 @@ target/
 .attach_pid*
 .mvn/
 *mvn*
+.idea/
 
