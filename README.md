@@ -1,2 +1,2 @@
-# wallet-core
+# wallets-core
 Spring Boot - REST
