@@ -30,8 +30,8 @@ import javassist.NotFoundException;
 import uy.com.demente.ideas.wallets.business.exceptions.*;
 import uy.com.demente.ideas.wallets.business.services.SecurityService;
 import uy.com.demente.ideas.wallets.business.services.TransferService;
-import uy.com.demente.ideas.wallets.dto.ListTransfersDTO;
-import uy.com.demente.ideas.wallets.dto.TransferDTO;
+import uy.com.demente.ideas.wallets.model.response.ListTransfersDTO;
+import uy.com.demente.ideas.wallets.model.response.TransferDTO;
 
 /**
  * @author 1987diegog
@@ -78,25 +78,25 @@ public class TransferResource {
 
 		} catch (WalletNotFoundException e) {
 			logger.error("[ADD_TRANSFER] [ERROR] - " + e.getLocalizedMessage());
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		} catch (TypeCoinDontMatchesException e) {
 			logger.error("[ADD_TRANSFER] [ERROR] - " + e.getLocalizedMessage());
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		} catch (WalletMatchesException e) {
 			logger.error("[ADD_TRANSFER] [ERROR] - " + e.getLocalizedMessage());
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		} catch (MakeTransferException e) {
 			logger.error("[ADD_TRANSFER] [ERROR] - " + e.getLocalizedMessage());
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		} catch (InsufficientBalanceException e) {
 			logger.error("[ADD_TRANSFER] [ERROR] - " + e.getLocalizedMessage());
-			return new ResponseEntity<>(null, HttpStatus.PAYMENT_REQUIRED);
+			return new ResponseEntity<>(HttpStatus.PAYMENT_REQUIRED);
 		} catch (InvalidSessionException e) {
 			logger.error("[ADD_TRANSFER] [ERROR] - " + e.getLocalizedMessage());
-			return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 		} catch (Exception e) {
 			logger.error("[ADD_TRANSFER] [ERROR] - Internal system error when trying to transfer");
-			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 

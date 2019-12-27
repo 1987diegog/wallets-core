@@ -7,9 +7,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javassist.NotFoundException;
+import uy.com.demente.ideas.wallets.business.exceptions.UserNotFoundException;
 import uy.com.demente.ideas.wallets.business.repository.IUserRepository;
-import uy.com.demente.ideas.wallets.dto.ListUsersDTO;
-import uy.com.demente.ideas.wallets.dto.UserDTO;
+import uy.com.demente.ideas.wallets.model.response.ListUsersDTO;
+import uy.com.demente.ideas.wallets.model.response.UserDTO;
 import uy.com.demente.ideas.wallets.model.User;
 import uy.com.demente.ideas.wallets.view.resources.factory.BOFactory;
 import uy.com.demente.ideas.wallets.view.resources.factory.DTOFactory;
@@ -41,10 +42,10 @@ public class UserService {
 	 * 
 	 * @param userDTO
 	 * @return
-	 * @throws NotFoundException
+	 * @throws UserNotFoundException(
 	 */
 	@Transactional
-	public UserDTO update(UserDTO userDTO) throws NotFoundException {
+	public UserDTO update(UserDTO userDTO) throws UserNotFoundException {
 
 		Optional<User> userToUpdate = userRepository.findById(userDTO.getIdUser());
 
@@ -60,7 +61,7 @@ public class UserService {
 			return DTOFactory.create(userRepository.save(user));
 
 		} else {
-			throw new NotFoundException("User not found, id: " + userDTO.getIdUser());
+			throw new UserNotFoundException("User not found, id: " + userDTO.getIdUser());
 		}
 	}
 
@@ -70,13 +71,13 @@ public class UserService {
 	 * @throws NotFoundException
 	 */
 	@Transactional
-	public void delete(Long id) throws NotFoundException {
+	public void delete(Long id) throws UserNotFoundException {
 
 		Optional<User> optional = this.userRepository.findById(id);
 		if (optional.isPresent()) {
 			this.userRepository.delete(optional.get());
 		} else {
-			throw new NotFoundException("User not found, id: " + id);
+			throw new UserNotFoundException("User not found, id: " + id);
 		}
 	}
 
@@ -91,15 +92,15 @@ public class UserService {
 	 * 
 	 * @param id
 	 * @return
-	 * @throws NotFoundException
+	 * @throws UserNotFoundException
 	 */
-	public UserDTO findById(Long id) throws NotFoundException {
+	public UserDTO findById(Long id) throws UserNotFoundException {
 
 		Optional<User> optional = this.userRepository.findById(id);
 		if (optional.isPresent()) {
 			return DTOFactory.create(optional.get());
 		} else {
-			throw new NotFoundException("User not found, id: " + id);
+			throw new UserNotFoundException("User not found, id: " + id);
 		}
 	}
 
@@ -107,16 +108,16 @@ public class UserService {
 	 * 
 	 * @param email
 	 * @return
-	 * @throws NotFoundException
+	 * @throws UserNotFoundException(
 	 */
-	public UserDTO findByEmail(String email) throws NotFoundException {
+	public UserDTO findByEmail(String email) throws UserNotFoundException {
 
 		User user = this.userRepository.findByEmail(email);
 		if (user != null) {
 			UserDTO response = DTOFactory.create(user);
 			return response;
 		} else {
-			throw new NotFoundException("User not found, email: " + email);
+			throw new UserNotFoundException("User not found, email: " + email);
 		}
 	}
 

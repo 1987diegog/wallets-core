@@ -1,4 +1,4 @@
-package uy.com.demente.ideas.wallets.dto;
+package uy.com.demente.ideas.wallets.model.response;
 
 /**
  * @author 1987diegog

@@ -1,4 +1,4 @@
-package uy.com.demente.ideas.wallets.dto;
+package uy.com.demente.ideas.wallets.model.response;
 
 import java.io.Serializable;
 import java.util.ArrayList;

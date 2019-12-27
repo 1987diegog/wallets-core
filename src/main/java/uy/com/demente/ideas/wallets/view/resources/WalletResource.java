@@ -20,8 +20,8 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import javassist.NotFoundException;
 import uy.com.demente.ideas.wallets.business.services.WalletService;
-import uy.com.demente.ideas.wallets.dto.ListWalletsDTO;
-import uy.com.demente.ideas.wallets.dto.WalletDTO;
+import uy.com.demente.ideas.wallets.model.response.ListWalletsDTO;
+import uy.com.demente.ideas.wallets.model.response.WalletDTO;
 
 /**
  * @author 1987diegog
