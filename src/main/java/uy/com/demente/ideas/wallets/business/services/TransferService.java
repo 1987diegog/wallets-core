@@ -319,7 +319,7 @@ public class TransferService {
 			return listDTO;
 
 		} catch (WalletNotFoundException e) {
-			throw new WalletNotFoundException(e);
+			throw new WalletNotFoundException(e.getMessage());
 		} catch (Exception e) {
 			logger.error("[TRANSFER_FIND_BY_FILTER] [ERROR] An error occurred while trying "
 					+ "to get the transactions by filter", e);

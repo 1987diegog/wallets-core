@@ -18,8 +18,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import javassist.NotFoundException;
 import uy.com.demente.ideas.wallets.business.exceptions.InternalServerErrorException;
+import uy.com.demente.ideas.wallets.business.exceptions.WalletNotFoundException;
 import uy.com.demente.ideas.wallets.business.services.WalletService;
 import uy.com.demente.ideas.wallets.model.response.ListWalletsDTO;
 import uy.com.demente.ideas.wallets.model.response.WalletDTO;
@@ -89,16 +89,16 @@ public class WalletResource {
             @ApiResponse(code = 200, message = "Wallet found"), //
             @ApiResponse(code = 404, message = "Wallet not found"), //
             @ApiResponse(code = 500, message = "Internal system error")})
-    public ResponseEntity<WalletDTO> findByHash(@PathVariable("hash") String hash) throws InternalServerErrorException {
+    public ResponseEntity<WalletDTO> findByHash(@PathVariable("hash") String hash) throws InternalServerErrorException, WalletNotFoundException {
 
         try {
             logger.info("[FIND_BY_HASH] - It will try to return a wallet by hash: " + hash);
             WalletDTO walletDTO = this.walletService.findByHash(hash);
             logger.info("[FIND_BY_HASH] - Wallet found successful, hash: " + hash);
             return new ResponseEntity<>(walletDTO, HttpStatus.OK);
-        } catch (NotFoundException e) {
-            logger.info("[FIND_BY_HASH] - Wallet not found hash: " + hash);
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        } catch (WalletNotFoundException e) {
+            logger.info("[FIND_BY_HASH] [NOT_FOUND] - Wallet not found, hash: " + hash);
+            throw new WalletNotFoundException("Wallet not found, hash: " + hash);
         } catch (Exception e) {
             logger.error("[FIND_BY_HASH] [ERROR] - To try get wallet with hash: " + hash, e);
             throw new InternalServerErrorException("Internal system error, when trying to get wallet with hash: " + hash);
@@ -112,16 +112,16 @@ public class WalletResource {
             @ApiResponse(code = 200, message = "Wallet updated successfully"), //
             @ApiResponse(code = 404, message = "Wallet not found"), //
             @ApiResponse(code = 500, message = "Internal system error")})
-    public ResponseEntity<WalletDTO> update(@RequestBody WalletDTO walletDTO) throws InternalServerErrorException {
+    public ResponseEntity<WalletDTO> update(@RequestBody WalletDTO walletDTO) throws InternalServerErrorException, WalletNotFoundException {
 
         try {
             logger.info("[UPDATE_WALLET] - It will try to update wallet with id: " + walletDTO.getIdWallet());
             WalletDTO response = walletService.update(walletDTO);
             logger.info("[UPDATE_WALLET] - Wallet updated successful, id: " + walletDTO.getIdWallet());
             return new ResponseEntity<>(response, HttpStatus.OK);
-        } catch (NotFoundException e) {
-            logger.error("[UPDATE_WALLET] [ERROR] - To try update wallet with id: " + walletDTO.getIdWallet());
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        } catch (WalletNotFoundException e) {
+            logger.info("[UPDATE_WALLET] [NOT_FOUND] - Wallet not found, id: " + walletDTO.getIdWallet());
+            throw new WalletNotFoundException("Wallet not found, id: " + walletDTO.getIdWallet());
         } catch (Exception e) {
             logger.error("[UPDATE_WALLET] [ERROR] - Internal server error, when trying to update wallet with id: "
                     + walletDTO.getIdWallet(), e);
@@ -136,15 +136,16 @@ public class WalletResource {
             @ApiResponse(code = 200, message = "Wallet deleted successful"), //
             @ApiResponse(code = 404, message = "Wallet not found"), //
             @ApiResponse(code = 500, message = "Internal system error")})
-    public ResponseEntity<String> delete(@PathVariable("id") Long id) throws InternalServerErrorException {
+    public ResponseEntity<String> delete(@PathVariable("id") Long id) throws InternalServerErrorException, WalletNotFoundException {
 
         try {
             logger.info("[DELETE_WALLET] - It will try to delete wallet with id: " + id);
             this.walletService.delete(id);
             logger.info("[DELETE_WALLET] - Wallet was deleted successful, id: " + id);
             return new ResponseEntity<>("Wallet was deleted successful, id:", HttpStatus.OK);
-        } catch (NotFoundException e) {
-            return new ResponseEntity<>("Wallet not found, id: " + id, HttpStatus.NOT_FOUND);
+        } catch (WalletNotFoundException e) {
+            logger.info("[DELETE_WALLET] [NOT_FOUND] - Wallet not found, id: " + id);
+            throw new WalletNotFoundException("Wallet not found, id: " + id);
         } catch (Exception e) {
 			logger.error("[DELETE_WALLET] [ERROR] - Internal system error, when trying to delete wallet whit id: " + id, e);
 			throw new InternalServerErrorException("Internal system error, when trying to delete wallet whit id: " + id);

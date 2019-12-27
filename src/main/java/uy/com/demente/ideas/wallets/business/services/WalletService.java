@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javassist.NotFoundException;
 import uy.com.demente.ideas.wallets.business.exceptions.UserNotFoundException;
+import uy.com.demente.ideas.wallets.business.exceptions.WalletNotFoundException;
 import uy.com.demente.ideas.wallets.business.repository.IUserRepository;
 import uy.com.demente.ideas.wallets.business.repository.IWalletRepository;
 import uy.com.demente.ideas.wallets.model.response.ListWalletsDTO;
@@ -40,10 +41,10 @@ public class WalletService {
 	/**
 	 * @param walletDTO
 	 * @return
-	 * @throws UserNotFoundException
+	 * @throws WalletNotFoundException
 	 */
 	@Transactional
-	public WalletDTO create(WalletDTO walletDTO) throws UserNotFoundException {
+	public WalletDTO create(WalletDTO walletDTO) throws WalletNotFoundException {
 
 		Optional<User> user = userRepository.findById(walletDTO.getIdUser());
 
@@ -54,7 +55,7 @@ public class WalletService {
 
 		} else {
 			logger.error("[CREATE_WALLET] [ERROR] - User with id: " + walletDTO.getIdUser() + " not found");
-			throw new UserNotFoundException("User with id: " + walletDTO.getIdUser() + " not found\"");
+			throw new WalletNotFoundException("User with id: " + walletDTO.getIdUser() + " not found\"");
 		}
 	}
 
@@ -62,10 +63,10 @@ public class WalletService {
 	 * 
 	 * @param walletDTO
 	 * @return
-	 * @throws NotFoundException
+	 * @throws WalletNotFoundException
 	 */
 	@Transactional
-	public WalletDTO update(WalletDTO walletDTO) throws NotFoundException {
+	public WalletDTO update(WalletDTO walletDTO) throws WalletNotFoundException {
 
 		Optional<Wallet> walletToUpdate = walletRepository.findById(walletDTO.getIdWallet());
 
@@ -79,23 +80,23 @@ public class WalletService {
 			return DTOFactory.create(walletRepository.save(wallet));
 
 		} else {
-			throw new NotFoundException("Wallet not found, id: " + walletDTO.getIdWallet());
+			throw new WalletNotFoundException("Wallet not found, id: " + walletDTO.getIdWallet());
 		}
 	}
 
 	/**
 	 * 
 	 * @param id
-	 * @throws NotFoundException
+	 * @throws WalletNotFoundException
 	 */
 	@Transactional
-	public void delete(Long id) throws NotFoundException {
+	public void delete(Long id) throws WalletNotFoundException {
 
 		Optional<Wallet> optional = this.walletRepository.findById(id);
 		if (optional.isPresent()) {
 			this.walletRepository.delete(optional.get());
 		} else {
-			throw new NotFoundException("Wallet not found, id: " + id);
+			throw new WalletNotFoundException("Wallet not found, id: " + id);
 		}
 	}
 
@@ -110,15 +111,15 @@ public class WalletService {
 	 * 
 	 * @param id
 	 * @return
-	 * @throws NotFoundException
+	 * @throws WalletNotFoundException
 	 */
-	public WalletDTO findById(Long id) throws NotFoundException {
+	public WalletDTO findById(Long id) throws WalletNotFoundException {
 
 		Optional<Wallet> optional = this.walletRepository.findById(id);
 		if (optional.isPresent()) {
 			return DTOFactory.create(optional.get());
 		} else {
-			throw new NotFoundException("Wallet not found, id: " + id);
+			throw new WalletNotFoundException("Wallet not found, id: " + id);
 		}
 	}
 
@@ -126,16 +127,16 @@ public class WalletService {
 	 * 
 	 * @param hash
 	 * @return
-	 * @throws NotFoundException
+	 * @throws WalletNotFoundException
 	 */
-	public WalletDTO findByHash(String hash) throws NotFoundException {
+	public WalletDTO findByHash(String hash) throws WalletNotFoundException {
 
 		Wallet wallet = this.walletRepository.findByHash(hash);
 
 		if (wallet != null) {
 			return DTOFactory.create(wallet);
 		} else {
-			throw new NotFoundException("Wallet not found, hash: " + hash);
+			throw new WalletNotFoundException("Wallet not found, hash: " + hash);
 		}
 	}
 
