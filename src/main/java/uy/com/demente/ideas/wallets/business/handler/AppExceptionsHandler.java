@@ -9,24 +9,25 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import uy.com.demente.ideas.wallets.business.exceptions.InternalServerErrorException;
+import uy.com.demente.ideas.wallets.business.exceptions.NotFoundException;
 import uy.com.demente.ideas.wallets.business.exceptions.UserNotFoundException;
 import uy.com.demente.ideas.wallets.model.response.ErrorMessage;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @ControllerAdvice
 public class AppExceptionsHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(value = {UserNotFoundException.class})
+    @ExceptionHandler(value = {NotFoundException.class})
     public ResponseEntity<Object> handleUserNotFoundException
-            (UserNotFoundException ex, WebRequest request) {
+            (NotFoundException ex, WebRequest request) {
 
         String message = ex.getLocalizedMessage();
         if(message == null) {
             ex.toString();
         }
 
-        ErrorMessage errorMessage = new ErrorMessage(message, new Date());
+        ErrorMessage errorMessage = new ErrorMessage(message, LocalDateTime.now());
         return new ResponseEntity<>(errorMessage, new HttpHeaders(), HttpStatus.NOT_FOUND);
     }
 
@@ -39,7 +40,7 @@ public class AppExceptionsHandler extends ResponseEntityExceptionHandler {
             message = "Internal Server Error";
         }
 
-        ErrorMessage errorMessage = new ErrorMessage(message, new Date());
+        ErrorMessage errorMessage = new ErrorMessage(message, LocalDateTime.now());
         return new ResponseEntity<>(errorMessage, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

@@ -1,7 +1,9 @@
 package uy.com.demente.ideas.wallets.model.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * @author 1987diegog
@@ -11,12 +13,14 @@ public class ErrorMessage implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private String message;
-    private Date timestamp;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
+    private LocalDateTime timestamp;
 
     public ErrorMessage() {
     }
 
-    public ErrorMessage(String message, Date timestamp) {
+    public ErrorMessage(String message, LocalDateTime timestamp) {
         this.message = message;
         this.timestamp = timestamp;
     }
@@ -29,11 +33,11 @@ public class ErrorMessage implements Serializable {
         this.message = message;
     }
 
-    public Date getTimestamp() {
+    public LocalDateTime getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(Date timestamp) {
+    public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
     }
 }
