@@ -68,7 +68,6 @@ public class BOFactory {
     }
 
     /**
-     *
      * @param user
      * @param userDTO
      * @return
@@ -101,19 +100,42 @@ public class BOFactory {
      */
     public static Wallet create(WalletDTO walletDTO, User user) {
 
+        logger.info("[CREATE_WALLET_BO] Start create wallet BOFactory...");
+
         Wallet wallet = null;
 
         if (walletDTO != null) {
             wallet = new Wallet();
             BeanUtils.copyProperties(walletDTO, wallet);
 
-            wallet.setTypeCoin(TypesCoins.get(walletDTO.getTypeCoin()));
+            // Additional attributes or data types to adapt
             wallet.setUser(user);
+            wallet.setTypeCoin(TypesCoins.get(walletDTO.getTypeCoin()));
             wallet.setCreated(new Date());
             wallet.setHash(Utils.generateHash());
         }
 
-        logger.info("[CREATE_WALLET_BO] BOFactory Successful");
+        logger.info("[CREATE_WALLET_BO] Create wallet BOFactory Successful");
+
+        return wallet;
+    }
+
+    /**
+     * @param wallet
+     * @param walletDTO
+     * @return
+     */
+    public static Wallet modify(Wallet wallet, WalletDTO walletDTO) {
+
+        logger.info("[MODIFY_WALLET_BO] Start modify wallet BOFactory...");
+
+        if (wallet != null && walletDTO != null) {
+            wallet.setBalance(walletDTO.getBalance());
+            wallet.setName(walletDTO.getName());
+            wallet.setTypeCoin(TypesCoins.get(walletDTO.getTypeCoin()));
+        }
+
+        logger.info("[MODIFY_WALLET_BO] Modify wallet BOFactory Successful");
 
         return wallet;
     }
@@ -128,19 +150,22 @@ public class BOFactory {
      */
     public static Transfer create(TransferDTO transferDTO, Wallet originWallet, Wallet destinationWallet) {
 
+        logger.info("[CREATE_TRANSFER_BO] Start create transfer BOFactory...");
+
         Transfer transfer = null;
 
         if (transferDTO != null) {
             transfer = new Transfer();
             BeanUtils.copyProperties(transferDTO, transfer);
 
+            // Additional attributes or data types to adapt
             transfer.setOriginWallet(originWallet);
             transfer.setDestinationWallet(destinationWallet);
             transfer.setTypeCoin(TypesCoins.get(transferDTO.getTypeCoin()));
             transfer.setTimestamp(new Date());
         }
 
-        logger.info("[CREATE_TRANSFER_BO] BOFactory Successful");
+        logger.info("[CREATE_TRANSFER_BO] Create transfer BOFactory Successful");
 
         return transfer;
     }

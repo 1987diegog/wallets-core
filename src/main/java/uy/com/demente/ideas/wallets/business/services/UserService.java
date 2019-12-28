@@ -34,9 +34,11 @@ public class UserService {
     /**
      * @param userDTO
      * @return
+     * @throws BussinesServiceException
      */
     @Transactional
     public UserDTO create(UserDTO userDTO) throws BussinesServiceException {
+        logger.info("[USER_CREATE] - Start, creating user...");
         try {
             User user = BOFactory.create(userDTO);
             return DTOFactory.create(this.userRepository.save(user));
@@ -54,6 +56,7 @@ public class UserService {
      */
     @Transactional
     public UserDTO update(UserDTO userDTO) throws UserNotFoundException, BussinesServiceException {
+        logger.info("[USER_UPDATE] - Start, modifying user...");
         try {
             Optional<User> userToUpdate = userRepository.findById(userDTO.getIdUser());
             if (userToUpdate.isPresent()) {
@@ -63,7 +66,7 @@ public class UserService {
                 throw new UserNotFoundException("User not found, id: " + userDTO.getIdUser());
             }
         } catch (UserNotFoundException e) {
-            logger.error("[USER_UPDATE] [NOT_FOUND] - User not found, id: " + userDTO.getIdUser(), e);
+            logger.info("[USER_UPDATE] [NOT_FOUND] - User not found, id: " + userDTO.getIdUser());
             throw e;
         } catch (Exception e) {
             logger.error("[USER_UPDATE] [ERROR] - An error occurred while trying to update a user data", e);
@@ -78,6 +81,7 @@ public class UserService {
      */
     @Transactional
     public void delete(Long id) throws UserNotFoundException, BussinesServiceException {
+        logger.info("[USER_DELETE] - Start, removing user...");
         try {
             Optional<User> optional = this.userRepository.findById(id);
             if (optional.isPresent()) {
@@ -86,11 +90,11 @@ public class UserService {
                 throw new UserNotFoundException("User not found, id: " + id);
             }
         } catch (UserNotFoundException e) {
-            logger.error("[USER_DELETE] [NOT_FOUND] - User not found, id: " + id, e);
+            logger.info("[USER_DELETE] [NOT_FOUND] - User not found, id: " + id);
             throw e;
         } catch (Exception e) {
-            logger.error("[USER_DELETE] [ERROR] - An error occurred while trying to delete " +
-                    "a user, id: " + id, e);
+            logger.error("[USER_DELETE] [ERROR] - An error occurred while trying to delete a user, " +
+                    "id: " + id, e);
             throw new BussinesServiceException("An error occurred while trying to delete a user, id: " + id, e);
         }
     }
@@ -109,6 +113,7 @@ public class UserService {
      * @throws BussinesServiceException
      */
     public UserDTO findById(Long id) throws UserNotFoundException, BussinesServiceException {
+        logger.info("[USER_FIND_BY_ID] - Start, searching user...");
         try {
             Optional<User> optional = this.userRepository.findById(id);
             if (optional.isPresent()) {
@@ -117,7 +122,7 @@ public class UserService {
                 throw new UserNotFoundException("User not found, id: " + id);
             }
         } catch (UserNotFoundException e) {
-            logger.error("[USER_FIND_BY_ID] [NOT_FOUND] - User not found, id: " + id, e);
+            logger.info("[USER_FIND_BY_ID] [NOT_FOUND] - User not found, id: " + id);
             throw e;
         } catch (Exception e) {
             logger.error("[USER_FIND_BY_ID] [ERROR] - An error occurred while trying to find " +
@@ -133,6 +138,7 @@ public class UserService {
      * @throws BussinesServiceException
      */
     public UserDTO findByEmail(String email) throws UserNotFoundException, BussinesServiceException {
+        logger.info("[USER_FIND_BY_EMAIL] - Start, searching user...");
         try {
             User user = this.userRepository.findByEmail(email);
             if (user != null) {
@@ -142,7 +148,7 @@ public class UserService {
                 throw new UserNotFoundException("User not found, email: " + email);
             }
         } catch (UserNotFoundException e) {
-            logger.error("[USER_FIND_BY_EMAIL] [NOT_FOUND] - User not found, email: " + email, e);
+            logger.info("[USER_FIND_BY_EMAIL] [NOT_FOUND] - User not found, email: " + email);
             throw e;
         } catch (Exception e) {
             logger.error("[USER_FIND_BY_EMAIL] [ERROR] - An error occurred while trying to find " +
@@ -156,15 +162,17 @@ public class UserService {
      * @throws BussinesServiceException
      */
     public ListUsersDTO findAll() throws BussinesServiceException {
+        logger.info("[USER_FIND_ALL] - Start, searching users...");
         try {
             List<UserDTO> listUsers = DTOFactory.getListUsers(this.userRepository.findAll());
             ListUsersDTO listDTO = new ListUsersDTO();
-            if (listUsers != null && listUsers.isEmpty() == false) {
+            if (listUsers != null) {
+                logger.info("[USER_FIND_ALL] - List users size: " + listUsers.size());
                 listDTO.setUsers(listUsers);
             }
             return listDTO;
         } catch (Exception e) {
-            logger.error("[USER_FIND_BY_EMAIL] [ERROR] - An error occurred while trying to find all users", e);
+            logger.error("[USER_FIND_ALL] [ERROR] - An error occurred while trying to find all users", e);
             throw new BussinesServiceException("An error occurred while trying to find all users", e);
         }
     }

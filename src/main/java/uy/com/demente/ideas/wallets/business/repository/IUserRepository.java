@@ -13,10 +13,10 @@ public interface IUserRepository extends JpaRepository<User, Long> {
 	/**
 	 * Query generated dynamically using Spring and the reserved name findBy
 	 * 
-	 * @param name
+	 * @param lastName
 	 * @return
 	 */
-	List<User> findByName(String name);
+	List<User> findByLastName(String lastName);
 
 	/**
 	 * Query generated with @NamedQuery
