@@ -31,336 +31,361 @@ import uy.com.demente.ideas.wallets.view.resources.factory.DTOFactory;
 @Transactional(readOnly = true)
 public class TransferService {
 
-	Logger logger = LogManager.getLogger(TransferService.class);
+    Logger logger = LogManager.getLogger(TransferService.class);
 
-	private final ITransferRepository transferRepository;
-	private final IWalletRepository walletRepository;
+    private final ITransferRepository transferRepository;
+    private final IWalletRepository walletRepository;
 
-	public TransferService(ITransferRepository transferRepository, IWalletRepository walletRepository) {
-		this.transferRepository = transferRepository;
-		this.walletRepository = walletRepository;
-	}
+    public TransferService(ITransferRepository transferRepository, IWalletRepository walletRepository) {
+        this.transferRepository = transferRepository;
+        this.walletRepository = walletRepository;
+    }
 
-	/**
-	 * 
-	 * @param transferDTO
-	 * @return
-	 * @throws WalletNotFoundException
-	 * @throws InsufficientBalanceException
-	 * @throws TypeCoinDontMatchesException
-	 * @throws WalletMatchesException
-	 * @throws MakeTransferException
-	 * @throws DTOFactoryException
-	 */
-	@Transactional
-	public TransferDTO createTransfer(TransferDTO transferDTO)
-			throws WalletNotFoundException, InsufficientBalanceException, TypeCoinDontMatchesException,
-			WalletMatchesException, MakeTransferException, DTOFactoryException {
+    /**
+     * @param transferDTO
+     * @return
+     * @throws WalletNotFoundException
+     * @throws InsufficientBalanceException
+     * @throws TypeCoinDontMatchesException
+     * @throws WalletMatchesException
+     * @throws MakeTransferException
+     */
+    @Transactional
+    public TransferDTO createTransfer(TransferDTO transferDTO)
+            throws WalletNotFoundException, InsufficientBalanceException, TypeCoinDontMatchesException,
+            WalletMatchesException, MakeTransferException, BussinesServiceException {
 
-		logger.info("[CREATE_TRANSFER] - Origin wallet with hash: " + transferDTO.getOriginWallet() //
-				+ ", destination wallet with hash: " + transferDTO.getDestinationWallet() + ", amount to transfer: "
-				+ transferDTO.getAmount());
+        try {
 
-		Wallet originWallet = this.getWalletByHash(transferDTO.getOriginWallet());
-		logger.info("[CREATE_TRANSFER] - The original wallet was obtained successfully...");
+            logger.info("[CREATE_TRANSFER] - Origin wallet with hash: " + transferDTO.getOriginWallet() //
+                    + ", destination wallet with hash: " + transferDTO.getDestinationWallet() + ", amount to transfer: "
+                    + transferDTO.getAmount());
 
-		Wallet destinationWallet = this.getWalletByHash(transferDTO.getDestinationWallet());
-		logger.info("[CREATE_TRANSFER] - The destination wallet was obtained successfully...");
+            Wallet originWallet = this.getWalletByHash(transferDTO.getOriginWallet());
+            logger.info("[CREATE_TRANSFER] - The original wallet was obtained successfully...");
 
-		// Validate if is possible the transfer
-		this.validateTransfer(originWallet, destinationWallet, transferDTO.getAmount());
-		logger.info("[CREATE_TRANSFER] - The validation was successful...");
+            Wallet destinationWallet = this.getWalletByHash(transferDTO.getDestinationWallet());
+            logger.info("[CREATE_TRANSFER] - The destination wallet was obtained successfully...");
 
-		Transfer transfer = this.makeTransfer(originWallet, destinationWallet, transferDTO);
-		logger.info("[CREATE_TRANSFER] - The creation of the transfer was successful...");
+            // Validate if is possible the transfer
+            this.validateTransfer(originWallet, destinationWallet, transferDTO.getAmount());
+            logger.info("[CREATE_TRANSFER] - The validation was successful...");
 
-		try {
+            Transfer transfer = this.makeTransfer(originWallet, destinationWallet, transferDTO);
+            logger.info("[CREATE_TRANSFER] - The creation of the transfer was successful...");
 
-			return DTOFactory.create(transfer);
 
-		} catch (Exception e) {
-			logger.error("[CREATE_TRANSFER] [ERROR] - When trying to create the object using factoryDTO", e);
-			throw new DTOFactoryException("When trying to create the object using factoryDTO", e);
-		}
-	}
+            return DTOFactory.create(transfer);
 
-	/**
-	 * 
-	 * @param origin
-	 * @param destination
-	 * @param amount
-	 * @throws WalletMatchesException
-	 * @throws TypeCoinDontMatchesException
-	 * @throws InsufficientBalanceException
-	 */
-	public void validateTransfer(Wallet origin, Wallet destination, BigDecimal amount)
-			throws WalletMatchesException, TypeCoinDontMatchesException, InsufficientBalanceException {
+        } catch (WalletNotFoundException | WalletMatchesException |
+                TypeCoinDontMatchesException | InsufficientBalanceException | MakeTransferException e) {
+            throw e;
+        } catch (Exception e) {
+            logger.error("[CREATE_TRANSFER] [ERROR] - When trying to create the object using factoryDTO", e);
+            throw new BussinesServiceException("When trying to create the object using factoryDTO", e);
+        }
+    }
 
-		/////////////////////////////////////////////////
-		////////////////// - WALLETS - //////////////////
-		/////////////////////////////////////////////////
+    /**
+     * @param origin
+     * @param destination
+     * @param amount
+     * @throws WalletMatchesException
+     * @throws TypeCoinDontMatchesException
+     * @throws InsufficientBalanceException
+     */
+    public void validateTransfer(Wallet origin, Wallet destination, BigDecimal amount)
+            throws WalletMatchesException, TypeCoinDontMatchesException, InsufficientBalanceException {
 
-		if (origin.getIdWallet().equals(destination.getIdWallet()) == false) {
-			logger.info("[VALIDATE_TRANSFER] - The origin and destination wallets are different, proceed...");
-		} else {
-			logger.info(
-					"[VALIDATE_TRANSFER] - The origin wallet is equal to the destination wallet, the transaction makes no sense");
-			throw new WalletMatchesException(
-					"The origin wallet is equal to the destination wallet, the transaction makes no sense");
-		}
+        /////////////////////////////////////////////////
+        ////////////////// - WALLETS - //////////////////
+        /////////////////////////////////////////////////
 
-		/////////////////////////////////////////////////
-		///////////////// - TYPE COIN - /////////////////
-		/////////////////////////////////////////////////
+        if (origin.getIdWallet().equals(destination.getIdWallet()) == false) {
+            logger.info("[VALIDATE_TRANSFER] - The origin and destination wallets are different, proceed...");
+        } else {
+            logger.info(
+                    "[VALIDATE_TRANSFER] - The origin wallet is equal to the destination wallet, the transaction makes no sense");
+            throw new WalletMatchesException(
+                    "The origin wallet is equal to the destination wallet, the transaction makes no sense");
+        }
 
-		if (origin.getTypeCoin().equals(destination.getTypeCoin())) {
-			logger.info("[VALIDATE_TRANSFER] - The type of currency is the same, proceed...");
-		} else {
-			// ------------------------------------
-			// ----- this.conversionCurrency(); --------
-			// ------------------------------------
-			logger.info("[VALIDATE_TRANSFER] - The type of currency is different");
-			throw new TypeCoinDontMatchesException("The type of currency is different");
-		}
+        /////////////////////////////////////////////////
+        ///////////////// - TYPE COIN - /////////////////
+        /////////////////////////////////////////////////
 
-		/////////////////////////////////////////////////
-		////////////////// - AMOUNT - ///////////////////
-		/////////////////////////////////////////////////
+        if (origin.getTypeCoin().equals(destination.getTypeCoin())) {
+            logger.info("[VALIDATE_TRANSFER] - The type of currency is the same, proceed...");
+        } else {
+            // ------------------------------------
+            // ----- this.conversionCurrency(); --------
+            // ------------------------------------
+            logger.info("[VALIDATE_TRANSFER] - The type of currency is different");
+            throw new TypeCoinDontMatchesException("The type of currency is different");
+        }
 
-		// Check if the balance of the original wallet is greater than or equal to the
-		// one you want to transfer ...
-		if (origin.getBalance().compareTo(amount) >= 0) {
-			logger.info(
-					"[VALIDATE_TRANSFER] - The original wallet has the same or more balance as requested in the transfer, proceed...");
-		} else {
-			logger.info(
-					"[VALIDATE_TRANSFER] - The balance to be transferred is greater than that of the original wallet");
-			throw new InsufficientBalanceException(
-					"The balance to be transferred is greater than that of the original wallet");
-		}
-	}
+        /////////////////////////////////////////////////
+        ////////////////// - AMOUNT - ///////////////////
+        /////////////////////////////////////////////////
 
-	/**
-	 */
-	public void conversionCurrency(BigDecimal amount, TypesCoins fromCoin, TypesCoins toCoin) {
-		// TODO: If contemplated, a currency transformation could be made, for example
-		// from PAGACOIN to DOLLARS and then from DOLLARS to BITCOIN
-	}
+        // Check if the balance of the original wallet is greater than or equal to the
+        // one you want to transfer ...
+        if (origin.getBalance().compareTo(amount) >= 0) {
+            logger.info(
+                    "[VALIDATE_TRANSFER] - The original wallet has the same or more balance as requested in the transfer, proceed...");
+        } else {
+            logger.info(
+                    "[VALIDATE_TRANSFER] - The balance to be transferred is greater than that of the original wallet");
+            throw new InsufficientBalanceException(
+                    "The balance to be transferred is greater than that of the original wallet");
+        }
+    }
 
-	/**
-	 * 
-	 * @param origin
-	 * @param destination
-	 * @param transferDTO
-	 * @return
-	 * @throws MakeTransferException
-	 */
-	public Transfer makeTransfer(Wallet origin, Wallet destination, TransferDTO transferDTO)
-			throws MakeTransferException {
+    /**
+     *
+     */
+    public void conversionCurrency(BigDecimal amount, TypesCoins fromCoin, TypesCoins toCoin) {
+        // TODO: If contemplated, a currency transformation could be made, for example
+        // from PAGACOIN to DOLLARS and then from DOLLARS to BITCOIN
+    }
 
-		try {
+    /**
+     * @param origin
+     * @param destination
+     * @param transferDTO
+     * @return
+     * @throws MakeTransferException
+     */
+    public Transfer makeTransfer(Wallet origin, Wallet destination, TransferDTO transferDTO)
+            throws MakeTransferException {
 
-			logger.info("[MAKE_TRANSFER] - Balance origin wallet before transfer: " + origin.getBalance());
-			BigDecimal origenWalletBalanceAfterTranfer = origin.getBalance().subtract(transferDTO.getAmount());
-			origin.setBalance(origenWalletBalanceAfterTranfer);
-			logger.info("[MAKE_TRANSFER] - Balance origin wallet after transfer: " + origin.getBalance());
+        try {
 
-			logger.info("[MAKE_TRANSFER] - Balance destination wallet before transfer: " + destination.getBalance());
-			BigDecimal destinationWalletBalanceAfterTranfer = destination.getBalance().add(transferDTO.getAmount());
-			destination.setBalance(destinationWalletBalanceAfterTranfer);
-			logger.info("[MAKE_TRANSFER] - Balance destination wallet before transfer: " + destination.getBalance());
+            logger.info("[MAKE_TRANSFER] - Balance origin wallet before transfer: " + origin.getBalance());
+            BigDecimal origenWalletBalanceAfterTranfer = origin.getBalance().subtract(transferDTO.getAmount());
+            origin.setBalance(origenWalletBalanceAfterTranfer);
+            logger.info("[MAKE_TRANSFER] - Balance origin wallet after transfer: " + origin.getBalance());
 
-			Transfer transfer = BOFactory.create(transferDTO, origin, destination);
-			Transfer newTransfer = this.transferRepository.save(transfer);
-			logger.info("[MAKE_TRANSFER] - The transfer was saved correctly, the associated id was: "
-					+ newTransfer.getIdTransfer());
+            logger.info("[MAKE_TRANSFER] - Balance destination wallet before transfer: " + destination.getBalance());
+            BigDecimal destinationWalletBalanceAfterTranfer = destination.getBalance().add(transferDTO.getAmount());
+            destination.setBalance(destinationWalletBalanceAfterTranfer);
+            logger.info("[MAKE_TRANSFER] - Balance destination wallet before transfer: " + destination.getBalance());
 
-			return newTransfer;
+            Transfer transfer = BOFactory.create(transferDTO, origin, destination);
+            Transfer newTransfer = this.transferRepository.save(transfer);
+            logger.info("[MAKE_TRANSFER] - The transfer was saved correctly, the associated id was: "
+                    + newTransfer.getIdTransfer());
 
-		} catch (Exception e) {
-			logger.error("[MAKE_TRANSFER] [ERROR] An error occurred while trying to create the transfer", e);
-			throw new MakeTransferException("An error occurred while trying to create the transfer", e);
-		}
-	}
+            return newTransfer;
 
-	/**
-	 * 
-	 * @param transferDTO
-	 * @return
-	 * @throws NotFoundException
-	 */
-	@Transactional
-	public TransferDTO update(TransferDTO transferDTO) throws NotFoundException {
+        } catch (Exception e) {
+            logger.error("[MAKE_TRANSFER] [ERROR] An error occurred while trying to create the transfer", e);
+            throw new MakeTransferException("An error occurred while trying to create the transfer", e);
+        }
+    }
 
-		Optional<Transfer> transferToUpdate = transferRepository.findById(transferDTO.getIdTransfer());
+    /**
+     * @param transferDTO
+     * @return
+     * @throws NotFoundException
+     */
+    @Transactional
+    public TransferDTO update(TransferDTO transferDTO) throws TransferNotFoundException, BussinesServiceException {
 
-		if (transferToUpdate.isPresent()) {
+        try {
+            Optional<Transfer> transferToUpdate = transferRepository.findById(transferDTO.getIdTransfer());
 
-			Transfer transfer = transferToUpdate.get();
+            if (transferToUpdate.isPresent()) {
 
-			transfer.setAmount(transferDTO.getAmount());
-			transfer.setTimestamp(transferDTO.getTimestamp());
-			transfer.setAdminName(transferDTO.getAdminName());
-			transfer.setTypeCoin(TypesCoins.get(transferDTO.getTypeCoin()));
+                Transfer transfer = transferToUpdate.get();
 
-			return DTOFactory.create(transferRepository.save(transfer));
+                transfer.setAmount(transferDTO.getAmount());
+                transfer.setTimestamp(transferDTO.getTimestamp());
+                transfer.setAdminName(transferDTO.getAdminName());
+                transfer.setTypeCoin(TypesCoins.get(transferDTO.getTypeCoin()));
 
-		} else {
-			throw new NotFoundException("Transfer not found, id: " + transferDTO.getIdTransfer());
-		}
-	}
+                return DTOFactory.create(transferRepository.save(transfer));
 
-	/**
-	 * 
-	 * @param id
-	 * @throws NotFoundException
-	 * @throws BussinesServiceException
-	 * @throws TransactionNotFoundException
-	 */
-	@Transactional
-	public void delete(Long id) throws BussinesServiceException, TransactionNotFoundException {
+            } else {
+                throw new TransferNotFoundException("Transfer not found, id: " + transferDTO.getIdTransfer());
+            }
+        } catch (TransferNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            logger.error("[TRANSFER_UPDATE] [ERROR] - An error occurred while trying to update the transfer", e);
+            throw new BussinesServiceException("An error occurred while trying to delete the transfer", e);
+        }
+    }
 
-		Optional<Transfer> optional = this.transferRepository.findById(id);
-		if (optional.isPresent()) {
-			try {
-				this.transferRepository.delete(optional.get());
-			} catch (Exception e) {
-				logger.error("[TRANSFER_DELETE] [ERROR] - An error occurred while trying to delete the transaction", e);
-				throw new BussinesServiceException("An error occurred while trying to delete the transaction", e);
-			}
-		} else {
-			throw new TransactionNotFoundException("Transaction not found");
-		}
-	}
+    /**
+     * @param id
+     * @throws NotFoundException
+     * @throws BussinesServiceException
+     * @throws TransferNotFoundException
+     */
+    @Transactional
+    public void delete(Long id) throws BussinesServiceException, TransferNotFoundException {
 
-	///////////////////////////////////////////////////////////////////
-	///////////////////////////// QUERIES /////////////////////////////
-	/////////////////////////////////////////////////////////////////
+        try {
+            Optional<Transfer> optional = this.transferRepository.findById(id);
+            if (optional.isPresent()) {
+                this.transferRepository.delete(optional.get());
+            } else {
+                throw new TransferNotFoundException("Transfer not found, id: " + id);
+            }
+        } catch (TransferNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            logger.error("[TRANSFER_DELETE] [ERROR] - An error occurred while trying to delete the transaction", e);
+            throw new BussinesServiceException("An error occurred while trying to delete the transaction", e);
+        }
+    }
 
-	// All methods that are not annotated with @Transactional
-	// will be treated as a read mode transaction
+    ///////////////////////////////////////////////////////////////////
+    ///////////////////////////// QUERIES /////////////////////////////
+    /////////////////////////////////////////////////////////////////
 
-	/**
-	 * 
-	 * @param id
-	 * @return
-	 * @throws NotFoundException
-	 * @throws BussinesServiceException
-	 * @throws TransactionNotFoundException
-	 */
-	public TransferDTO findById(Long id) throws BussinesServiceException, TransactionNotFoundException {
+    // All methods that are not annotated with @Transactional
+    // will be treated as a read mode transaction
 
-		Optional<Transfer> optional = this.transferRepository.findById(id);
-		if (optional.isPresent()) {
-			try {
-				return DTOFactory.create(optional.get());
-			} catch (Exception e) {
-				logger.error("[TRANSFER_FIND_BY_ID] [ERROR] - An error occurred while "
-						+ "trying to get the transaction with id: " + id, e);
-				throw new BussinesServiceException(
-						"An error occurred while trying to get the transaction with id: " + id, e);
-			}
-		} else {
-			throw new TransactionNotFoundException("Transaction not found");
-		}
-	}
+    /**
+     * @param id
+     * @return
+     * @throws BussinesServiceException
+     * @throws TransferNotFoundException
+     */
+    public TransferDTO findById(Long id) throws BussinesServiceException, TransferNotFoundException {
 
-	/**
-	 * 
-	 * @param hash
-	 * @return
-	 * @throws WalletNotFoundException
-	 */
-	private Wallet getWalletByHash(String hash) throws WalletNotFoundException {
+        try {
+            Optional<Transfer> optional = this.transferRepository.findById(id);
+            if (optional.isPresent()) {
+                return DTOFactory.create(optional.get());
+            } else {
+                throw new TransferNotFoundException("Transfer not found, id: " + id);
+            }
+        } catch (TransferNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            logger.error("[TRANSFER_FIND_BY_ID] [ERROR] - An error occurred while trying to get " +
+                    "the transfer with id: " + id, e);
+            throw new BussinesServiceException("An error occurred while trying to get " +
+                    "the transfer with id: " + id, e);
+        }
+    }
 
-		Wallet wallet = this.walletRepository.findByHash(hash);
+    /**
+     * @param hash
+     * @return
+     * @throws BussinesServiceException
+     * @throws WalletNotFoundException
+     */
+    private Wallet getWalletByHash(String hash) throws BussinesServiceException, WalletNotFoundException {
 
-		if (wallet == null) {
-			logger.info("[GET_WALLET_BY_HASH] [ERROR] - Hash wallet not found: " + hash);
-			throw new WalletNotFoundException("Hash wallet not found: " + hash);
-		}
+        try {
+            Wallet wallet = this.walletRepository.findByHash(hash);
+            if (wallet == null) {
+                logger.info("[GET_WALLET_BY_HASH] [ERROR] - Wallet not found, hash: " + hash);
+                throw new WalletNotFoundException("Wallet not found, hash: " + hash);
+            }
+            return wallet;
+        } catch (WalletNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            logger.error("[GET_WALLET_BY_HASH] [ERROR] - An error occurred while trying to get " +
+                    "the wallet with hash: " + hash, e);
+            throw new BussinesServiceException("An error occurred while trying to get " +
+                    "the wallet with hash: " + hash, e);
+        }
+    }
 
-		return wallet;
-	}
+    /**
+     * @param fromTimestamp
+     * @param toTimestamp
+     * @param originWallet
+     * @return
+     * @throws BussinesServiceException
+     * @throws WalletNotFoundException
+     */
+    public ListTransfersDTO findByFilter(Date fromTimestamp, Date toTimestamp, Optional<String> originWallet)
+            throws BussinesServiceException, WalletNotFoundException {
 
-	/**
-	 * 
-	 * @param fromTimestamp
-	 * @param toTimestamp
-	 * @param originWallet
-	 * @return
-	 * @throws BussinesServiceException
-	 * @throws WalletNotFoundException
-	 */
-	public ListTransfersDTO findByFilter(Date fromTimestamp, Date toTimestamp, Optional<String> originWallet)
-			throws BussinesServiceException, WalletNotFoundException {
+        try {
 
-		try {
+            // Set 00:00:00
+            Date fromDate = DateUtils.getDateFrom(fromTimestamp);
+            // Set 23:59:59
+            Date toDate = DateUtils.getDateTo(toTimestamp);
 
-			// Set 00:00:00
-			Date fromDate = DateUtils.getDateFrom(fromTimestamp);
-			// Set 23:59:59
-			Date toDate = DateUtils.getDateTo(toTimestamp);
+            List<Transfer> listTransfer = this.getTransferByFilter(fromDate, toDate, originWallet);
 
-			List<Transfer> listTransfer = getTransferByFilet(fromDate, toDate, originWallet);
+            // I determine what query to apply...
+            ListTransfersDTO listDTO = new ListTransfersDTO();
+            if (listTransfer != null && listTransfer.isEmpty() == false) {
+                logger.info(
+                        "[TRANSFER_FIND_BY_FILTER] - The amount of transactions obtained was: " + listTransfer.size());
+                List<TransferDTO> listTransfersDTO = DTOFactory.getListTransfers(listTransfer);
+                listDTO.setTransfers(listTransfersDTO);
 
-			// I determine what query to apply...
-			ListTransfersDTO listDTO = new ListTransfersDTO();
-			if (listTransfer != null && listTransfer.isEmpty() == false) {
-				logger.info(
-						"[TRANSFER_FIND_BY_FILTER] - The amount of transactions obtained was: " + listTransfer.size());
-				List<TransferDTO> listTransfersDTO = DTOFactory.getListTransfers(listTransfer);
-				listDTO.setTransfers(listTransfersDTO);
+            } else {
+                logger.info("[TRANSFER_FIND_BY_FILTER] - No transactions were obtained.");
+            }
 
-			} else {
-				logger.info("[TRANSFER_FIND_ALL] - No transactions were obtained.");
-			}
+            return listDTO;
 
-			return listDTO;
+        } catch (WalletNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            logger.error("[TRANSFER_FIND_BY_FILTER] [ERROR] An error occurred while trying "
+                    + "to get the transactions by filter", e);
+            throw new BussinesServiceException("An error occurred while trying to get the transactions by filter", e);
+        }
+    }
 
-		} catch (WalletNotFoundException e) {
-			throw new WalletNotFoundException(e.getMessage());
-		} catch (Exception e) {
-			logger.error("[TRANSFER_FIND_BY_FILTER] [ERROR] An error occurred while trying "
-					+ "to get the transactions by filter", e);
-			throw new BussinesServiceException("An error occurred while trying to get the transactions by filter", e);
-		}
-	}
+    /***
+     *
+     * @param fromDate
+     * @param toDate
+     * @param originWallet
+     * @return
+     * @throws WalletNotFoundException
+     */
+    private List<Transfer> getTransferByFilter(Date fromDate, Date toDate, Optional<String> originWallet)
+            throws WalletNotFoundException, BussinesServiceException {
 
-	/***
-	 * 
-	 * @param fromDate
-	 * @param toDate
-	 * @param originWallet
-	 * @return
-	 * @throws WalletNotFoundException
-	 */
-	private List<Transfer> getTransferByFilet(Date fromDate, Date toDate, Optional<String> originWallet)
-			throws WalletNotFoundException {
+        try {
 
-		List<Transfer> listTransfer = new ArrayList<Transfer>();
-		if (originWallet.isPresent()) {
+            List<Transfer> listTransfer = new ArrayList<Transfer>();
+            if (originWallet.isPresent()) {
 
-			logger.info("[TRANSFER_FIND_BY_FILTER] - Query params - from timestamp: " + fromDate.toString()
-					+ ", to timestamp: " + toDate.toString() + ", hash origin wallet: " + originWallet.get());
+                logger.info("[TRANSFER_FIND_BY_FILTER] - Query params - from timestamp: " + fromDate.toString()
+                        + ", to timestamp: " + toDate.toString() + ", hash origin wallet: " + originWallet.get());
 
-			Wallet wallet = walletRepository.findByHash(originWallet.get());
+                Wallet wallet = walletRepository.findByHash(originWallet.get());
 
-			if (wallet != null) {
-				listTransfer = this.transferRepository.findByFilter(fromDate, toDate, wallet);
-			} else {
-				logger.info("[TRANSFER_FIND_BY_FILTER] - Hash wallet not found: " + originWallet.get());
-				// return empty list...
-				throw new WalletNotFoundException("Hash wallet not found: " + originWallet.get());
-			}
+                if (wallet != null) {
+                    listTransfer = this.transferRepository.findByFilter(fromDate, toDate, wallet);
+                } else {
+                    logger.info("[TRANSFER_FIND_BY_FILTER] - Hash wallet not found: " + originWallet.get());
+                    // return empty list...
+                    throw new WalletNotFoundException("Hash wallet not found: " + originWallet.get());
+                }
 
-		} else {
+            } else {
 
-			logger.info("[TRANSFER_FIND_BY_FILTER] - Query params - from timestamp: " + fromDate.toString()
-					+ ", to timestamp: " + toDate.toString());
-			listTransfer = this.transferRepository.findByFilter(fromDate, toDate);
-		}
+                logger.info("[TRANSFER_FIND_BY_FILTER] - Query params - from timestamp: " + fromDate.toString()
+                        + ", to timestamp: " + toDate.toString());
+                listTransfer = this.transferRepository.findByFilter(fromDate, toDate);
+            }
 
-		return listTransfer;
-	}
+            return listTransfer;
+
+
+        } catch (WalletNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            logger.error("[TRANSFER_FIND_BY_FILTER] [ERROR] An error occurred while trying "
+                    + "to get the transactions by filter", e);
+            throw new BussinesServiceException("An error occurred while trying to get the transactions by filter", e);
+        }
+    }
 }

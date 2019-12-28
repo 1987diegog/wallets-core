@@ -3,7 +3,7 @@ package uy.com.demente.ideas.wallets.business.exceptions;
 /**
  * @author 1987diegog
  */
-public class TransferNotFoundException extends Exception {
+public class TransferNotFoundException extends NotFoundException {
 
 	private static final long serialVersionUID = 1L;
 
@@ -22,5 +22,4 @@ public class TransferNotFoundException extends Exception {
 	public TransferNotFoundException(Throwable cause) {
 		super(cause);
 	}
-
 }

@@ -63,48 +63,6 @@ public class WalletResource {
         }
     }
 
-    @GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
-    @ApiOperation(value = "Returns all wallets", //
-            notes = "Service returns all wallets")
-    @ApiResponses(value = { //
-            @ApiResponse(code = 200, message = "Wallets found"), //
-            @ApiResponse(code = 500, message = "Internal system error")})
-    public ResponseEntity<ListWalletsDTO> findAll() throws InternalServerErrorException {
-
-        try {
-            logger.info("[GET_ALL_WALLETS] - It will try to return all system wallets...");
-            ListWalletsDTO listWalletsDTO = this.walletService.findAll();
-            logger.info("[GET_ALL_WALLETS] - Get all wallets finished successfully");
-            return new ResponseEntity<>(listWalletsDTO, HttpStatus.OK);
-        } catch (Exception e) {
-            logger.error("[GET_ALL_WALLETS] [ERROR] - Internal system error when trying to get all wallets", e);
-            throw new InternalServerErrorException("Internal system error, when trying to get all wallets");
-        }
-    }
-
-    @GetMapping("/{hash}")
-    @ApiOperation(value = "Get a user by hash", //
-            notes = "Service to returns a user by hash")
-    @ApiResponses(value = { //
-            @ApiResponse(code = 200, message = "Wallet found"), //
-            @ApiResponse(code = 404, message = "Wallet not found"), //
-            @ApiResponse(code = 500, message = "Internal system error")})
-    public ResponseEntity<WalletDTO> findByHash(@PathVariable("hash") String hash) throws InternalServerErrorException, WalletNotFoundException {
-
-        try {
-            logger.info("[FIND_BY_HASH] - It will try to return a wallet by hash: " + hash);
-            WalletDTO walletDTO = this.walletService.findByHash(hash);
-            logger.info("[FIND_BY_HASH] - Wallet found successful, hash: " + hash);
-            return new ResponseEntity<>(walletDTO, HttpStatus.OK);
-        } catch (WalletNotFoundException e) {
-            logger.info("[FIND_BY_HASH] [NOT_FOUND] - Wallet not found, hash: " + hash);
-            throw new WalletNotFoundException("Wallet not found, hash: " + hash);
-        } catch (Exception e) {
-            logger.error("[FIND_BY_HASH] [ERROR] - To try get wallet with hash: " + hash, e);
-            throw new InternalServerErrorException("Internal system error, when trying to get wallet with hash: " + hash);
-        }
-    }
-
     @PutMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
     @ApiOperation(value = "Update wallet", //
             notes = "Service for update wallet")
@@ -147,8 +105,54 @@ public class WalletResource {
             logger.info("[DELETE_WALLET] [NOT_FOUND] - Wallet not found, id: " + id);
             throw new WalletNotFoundException("Wallet not found, id: " + id);
         } catch (Exception e) {
-			logger.error("[DELETE_WALLET] [ERROR] - Internal system error, when trying to delete wallet whit id: " + id, e);
-			throw new InternalServerErrorException("Internal system error, when trying to delete wallet whit id: " + id);
+            logger.error("[DELETE_WALLET] [ERROR] - Internal system error, when trying to delete wallet whit id: " + id, e);
+            throw new InternalServerErrorException("Internal system error, when trying to delete wallet whit id: " + id);
+        }
+    }
+
+    //////////////////////////////////////////////////////////////////
+    ///////////////////////////// QUERIES ////////////////////////////
+    /////////////////////////////////////////////////////////////////
+
+    @GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ApiOperation(value = "Returns all wallets", //
+            notes = "Service returns all wallets")
+    @ApiResponses(value = { //
+            @ApiResponse(code = 200, message = "Wallets found"), //
+            @ApiResponse(code = 500, message = "Internal system error")})
+    public ResponseEntity<ListWalletsDTO> findAll() throws InternalServerErrorException {
+
+        try {
+            logger.info("[GET_ALL_WALLETS] - It will try to return all system wallets...");
+            ListWalletsDTO listWalletsDTO = this.walletService.findAll();
+            logger.info("[GET_ALL_WALLETS] - Get all wallets finished successfully");
+            return new ResponseEntity<>(listWalletsDTO, HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("[GET_ALL_WALLETS] [ERROR] - Internal system error when trying to get all wallets", e);
+            throw new InternalServerErrorException("Internal system error, when trying to get all wallets");
+        }
+    }
+
+    @GetMapping("/{hash}")
+    @ApiOperation(value = "Get a user by hash", //
+            notes = "Service to returns a user by hash")
+    @ApiResponses(value = { //
+            @ApiResponse(code = 200, message = "Wallet found"), //
+            @ApiResponse(code = 404, message = "Wallet not found"), //
+            @ApiResponse(code = 500, message = "Internal system error")})
+    public ResponseEntity<WalletDTO> findByHash(@PathVariable("hash") String hash) throws InternalServerErrorException, WalletNotFoundException {
+
+        try {
+            logger.info("[FIND_BY_HASH] - It will try to return a wallet by hash: " + hash);
+            WalletDTO walletDTO = this.walletService.findByHash(hash);
+            logger.info("[FIND_BY_HASH] - Wallet found successful, hash: " + hash);
+            return new ResponseEntity<>(walletDTO, HttpStatus.OK);
+        } catch (WalletNotFoundException e) {
+            logger.info("[FIND_BY_HASH] [NOT_FOUND] - Wallet not found, hash: " + hash);
+            throw new WalletNotFoundException("Wallet not found, hash: " + hash);
+        } catch (Exception e) {
+            logger.error("[FIND_BY_HASH] [ERROR] - To try get wallet with hash: " + hash, e);
+            throw new InternalServerErrorException("Internal system error, when trying to get wallet with hash: " + hash);
         }
     }
 }

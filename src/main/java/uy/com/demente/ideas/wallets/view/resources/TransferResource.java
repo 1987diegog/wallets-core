@@ -100,6 +100,58 @@ public class TransferResource {
 		}
 	}
 
+	@PutMapping(produces = { MediaType.APPLICATION_JSON_VALUE })
+	@ApiOperation(value = "Update transfer", //
+			notes = "Service for update transfer")
+	@ApiResponses(value = { //
+			@ApiResponse(code = 200, message = "Transfer updated successfully"), //
+			@ApiResponse(code = 404, message = "Transfer not found"), //
+			@ApiResponse(code = 500, message = "Internal system error") })
+	public ResponseEntity<TransferDTO> update(@RequestBody TransferDTO transferDTO) {
+
+		try {
+			logger.info("[UPDATE_TRANSFER] - It will try to update transfer with id: " + transferDTO.getIdTransfer());
+			TransferDTO response = transferService.update(transferDTO);
+			logger.info("[UPDATE_TRANSFER] - Transfer updated successful, id: " + transferDTO.getIdTransfer());
+			return new ResponseEntity<>(response, HttpStatus.OK);
+		} catch (TransferNotFoundException e) {
+			logger.error("[UPDATE_TRANSFER] [ERROR] - To try transfer with id: " + transferDTO.getIdTransfer());
+			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+		} catch (Exception e) {
+			logger.error("[UPDATE_TRANSFER] [ERROR] - Internal server error, when trying to update transfer with id: "
+					+ transferDTO.getIdTransfer());
+			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@DeleteMapping(path = "/{id}", //
+			produces = { MediaType.APPLICATION_JSON_VALUE })
+	@ApiOperation(value = "Delete a Transfer", //
+			notes = "Service to delete a Transfer")
+	@ApiResponses(value = { //
+			@ApiResponse(code = 200, message = "Delete a transfer successfully"),
+			@ApiResponse(code = 404, message = "Transfer not found"),
+			@ApiResponse(code = 500, message = "Internal system error") })
+	public ResponseEntity<String> delete(@PathVariable("id") Long id) {
+
+		try {
+			logger.info("[DELETE_TRANSFER] - It will try to delete a transfer with id: " + id);
+			this.transferService.delete(id);
+			logger.info("[DELETE_TRANSFER] - The transfer with id " + id + " was deleted successful");
+			return new ResponseEntity<>("- The transfer with id " + id + " was deleted successful", HttpStatus.OK);
+		} catch (TransferNotFoundException e) {
+			return new ResponseEntity<>("Transfer not found, id: " + id, HttpStatus.NOT_FOUND);
+		} catch (Exception e) {
+			logger.error(
+					"[DELETE_TRANSFER] [ERROR] - Internal system error when trying to get transfers with id: " + id);
+			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	//////////////////////////////////////////////////////////////////
+	///////////////////////////// QUERIES ////////////////////////////
+	/////////////////////////////////////////////////////////////////
+
 	@GetMapping(produces = { MediaType.APPLICATION_JSON_VALUE })
 	@ApiOperation(value = "Returns all Transfers filtered by the parameters received", //
 			notes = "Service returns all Transfers filtered by the parameters received")
@@ -151,60 +203,12 @@ public class TransferResource {
 			TransferDTO transferDTO = this.transferService.findById(id);
 			logger.info("[TRANSFER_FIND_BY_ID] - Transfer found successful, id: " + id);
 			return new ResponseEntity<>(transferDTO, HttpStatus.OK);
-		} catch (TransactionNotFoundException e) {
+		} catch (TransferNotFoundException e) {
 			logger.info("[TRANSFER_FIND_BY_ID] - Transfer not found, id: " + id);
 			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 		} catch (Exception e) {
 			logger.error("[TRANSFER_FIND_BY_ID] [ERROR] - Internal system error when trying "
 					+ "to get transfers with id: " + id);
-			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
-
-	@PutMapping(produces = { MediaType.APPLICATION_JSON_VALUE })
-	@ApiOperation(value = "Update transfer", //
-			notes = "Service for update transfer")
-	@ApiResponses(value = { //
-			@ApiResponse(code = 200, message = "Transfer updated successfully"), //
-			@ApiResponse(code = 404, message = "Transfer not found"), //
-			@ApiResponse(code = 500, message = "Internal system error") })
-	public ResponseEntity<TransferDTO> update(@RequestBody TransferDTO transferDTO) {
-
-		try {
-			logger.info("[UPDATE_TRANSFER] - It will try to update transfer with id: " + transferDTO.getIdTransfer());
-			TransferDTO response = transferService.update(transferDTO);
-			logger.info("[UPDATE_TRANSFER] - Transfer updated successful, id: " + transferDTO.getIdTransfer());
-			return new ResponseEntity<>(response, HttpStatus.OK);
-		} catch (NotFoundException e) {
-			logger.error("[UPDATE_TRANSFER] [ERROR] - To try transfer with id: " + transferDTO.getIdTransfer());
-			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-		} catch (Exception e) {
-			logger.error("[UPDATE_TRANSFER] [ERROR] - Internal server error, when trying to update transfer with id: "
-					+ transferDTO.getIdTransfer());
-			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
-
-	@DeleteMapping(path = "/{id}", //
-			produces = { MediaType.APPLICATION_JSON_VALUE })
-	@ApiOperation(value = "Delete a Transfer", //
-			notes = "Service to delete a Transfer")
-	@ApiResponses(value = { //
-			@ApiResponse(code = 200, message = "Delete a transfer successfully"),
-			@ApiResponse(code = 404, message = "Transfer not found"),
-			@ApiResponse(code = 500, message = "Internal system error") })
-	public ResponseEntity<String> delete(@PathVariable("id") Long id) {
-
-		try {
-			logger.info("[DELETE_TRANSFER] - It will try to delete a transfer with id: " + id);
-			this.transferService.delete(id);
-			logger.info("[DELETE_TRANSFER] - The transfer with id " + id + " was deleted successful");
-			return new ResponseEntity<>("- The transfer with id " + id + " was deleted successful", HttpStatus.OK);
-		} catch (TransactionNotFoundException e) {
-			return new ResponseEntity<>("Transfer not found, id: " + id, HttpStatus.NOT_FOUND);
-		} catch (Exception e) {
-			logger.error(
-					"[DELETE_TRANSFER] [ERROR] - Internal system error when trying to get transfers with id: " + id);
 			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}

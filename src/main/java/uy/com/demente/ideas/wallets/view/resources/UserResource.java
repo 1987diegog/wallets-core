@@ -34,12 +34,13 @@ import uy.com.demente.ideas.wallets.model.response.UserDTO;
 @Api(tags = "User")
 public class UserResource {
 
-    Logger logger = LogManager.getLogger(UserResource.class);
+    private Logger logger;
 
     private final UserService userService;
     private final WalletService walletService;
 
     public UserResource(UserService userService, WalletService walletService) {
+        logger = LogManager.getLogger(UserResource.class);
         this.userService = userService;
         this.walletService = walletService;
     }
@@ -93,6 +94,52 @@ public class UserResource {
         }
     }
 
+    @DeleteMapping("/{id}")
+    @ApiOperation(value = "Delete a user", //
+            notes = "Service to delete a user")
+    @ApiResponses(value = { //
+            @ApiResponse(code = 200, message = "User deleted successful"), //
+            @ApiResponse(code = 404, message = "User not found"), //
+            @ApiResponse(code = 500, message = "Internal system error")})
+    public ResponseEntity<String> delete(@PathVariable("id") Long id) throws UserNotFoundException, InternalServerErrorException {
+
+        try {
+            logger.info("[DELETE_USER] - It will try to delete user with id: " + id);
+            this.userService.delete(id);
+            logger.info("[DELETE_USER] - User was deleted successful, id: " + id);
+            return new ResponseEntity<>("User was deleted successful, id:", HttpStatus.OK);
+        } catch (UserNotFoundException e) {
+            logger.info("[DELETE_USER] [NOT_FOUND] - User not found, id: " + id);
+            throw new UserNotFoundException("User not found, id: " + id);
+        } catch (Exception e) {
+            logger.error("[DELETE_USER] [ERROR] - Internal system error when trying to delete user whit id: " + id, e);
+            throw new InternalServerErrorException("Internal system error when trying to delete user whit id: " + id);
+        }
+    }
+
+    //////////////////////////////////////////////////////////////////
+    ///////////////////////////// QUERIES ////////////////////////////
+    /////////////////////////////////////////////////////////////////
+
+    @GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ApiOperation(value = "Returns all users", //
+            notes = "Service returns all users")
+    @ApiResponses(value = { //
+            @ApiResponse(code = 200, message = "Users found"), //
+            @ApiResponse(code = 500, message = "Internal system error")})
+    public ResponseEntity<ListUsersDTO> findAll() throws InternalServerErrorException {
+
+        try {
+            logger.info("[GET_ALL_USERS] - It will try to return all system users...");
+            ListUsersDTO listUsersDTO = this.userService.findAll();
+            logger.info("[GET_ALL_USERS] - Get all users finished successfully ");
+            return new ResponseEntity<>(listUsersDTO, HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("[GET_ALL_USERS] [ERROR] - Internal system error, when trying to get all users", e);
+            throw new InternalServerErrorException("Internal server error, when trying to get all users");
+        }
+    }
+
     @GetMapping(path = "/{id}", //
             produces = {MediaType.APPLICATION_JSON_VALUE})
     @ApiOperation(value = "Get a user by id", //
@@ -119,25 +166,6 @@ public class UserResource {
         }
     }
 
-    @GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
-    @ApiOperation(value = "Returns all users", //
-            notes = "Service returns all users")
-    @ApiResponses(value = { //
-            @ApiResponse(code = 200, message = "Users found"), //
-            @ApiResponse(code = 500, message = "Internal system error")})
-    public ResponseEntity<ListUsersDTO> findAll() throws InternalServerErrorException {
-
-        try {
-            logger.info("[GET_ALL_USERS] - It will try to return all system users...");
-            ListUsersDTO listUsersDTO = this.userService.findAll();
-            logger.info("[GET_ALL_USERS] - Get all users finished successfully ");
-            return new ResponseEntity<>(listUsersDTO, HttpStatus.OK);
-        } catch (Exception e) {
-            logger.error("[GET_ALL_USERS] [ERROR] - Internal system error, when trying to get all users", e);
-            throw new InternalServerErrorException("Internal server error, when trying to get all users");
-        }
-    }
-
     @GetMapping(path = "/{id}/wallets", //
             produces = {MediaType.APPLICATION_JSON_VALUE})
     @ApiOperation(value = "Returns all user wallets", //
@@ -155,29 +183,6 @@ public class UserResource {
         } catch (Exception e) {
             logger.error("[FIND_ALL_WALLETS_BY_USER] [ERROR] - Internal system error, when trying to get all user wallets", e);
             throw new InternalServerErrorException("Internal system error, when trying to get all user wallets");
-        }
-    }
-
-    @DeleteMapping("/{id}")
-    @ApiOperation(value = "Delete a user", //
-            notes = "Service to delete a user")
-    @ApiResponses(value = { //
-            @ApiResponse(code = 200, message = "User deleted successful"), //
-            @ApiResponse(code = 404, message = "User not found"), //
-            @ApiResponse(code = 500, message = "Internal system error")})
-    public ResponseEntity<String> delete(@PathVariable("id") Long id) throws UserNotFoundException, InternalServerErrorException {
-
-        try {
-            logger.info("[DELETE_USER] - It will try to delete user with id: " + id);
-            this.userService.delete(id);
-            logger.info("[DELETE_USER] - User was deleted successful, id: " + id);
-            return new ResponseEntity<>("User was deleted successful, id:", HttpStatus.OK);
-        } catch (UserNotFoundException e) {
-            logger.info("[DELETE_USER] [NOT_FOUND] - User not found, id: " + id);
-            throw new UserNotFoundException("User not found, id: " + id);
-        } catch (Exception e) {
-            logger.error("[DELETE_USER] [ERROR] - Internal system error when trying to delete user whit id: " + id, e);
-            throw new InternalServerErrorException("Internal system error when trying to delete user whit id: " + id);
         }
     }
 }

@@ -18,7 +18,7 @@ public interface IWalletRepository extends JpaRepository<Wallet, Long> {
 	 * @param user
 	 * @return
 	 */
-	public List<Wallet> findByUser(User user);
+	List<Wallet> findByUser(User user);
 
 	/**
 	 * Query generated with @NamedQuery
@@ -26,6 +26,6 @@ public interface IWalletRepository extends JpaRepository<Wallet, Long> {
 	 * @param hash
 	 * @return
 	 */
-	public Wallet findByHash(String hash);
+	Wallet findByHash(String hash);
 
 }

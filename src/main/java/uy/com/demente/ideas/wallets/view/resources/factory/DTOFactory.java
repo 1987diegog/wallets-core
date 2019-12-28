@@ -20,131 +20,126 @@ import uy.com.demente.ideas.wallets.model.Wallet;
  */
 public class DTOFactory {
 
-	static Logger logger = LogManager.getLogger(DTOFactory.class);
+    static Logger logger = LogManager.getLogger(DTOFactory.class);
 
-	/////////////////////////////////////////////////////////////
-	/////////////////////////// USER ////////////////////////////
-	/////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////
+    /////////////////////////// USER ////////////////////////////
+    /////////////////////////////////////////////////////////////
 
-	/**
-	 * 
-	 * @param listUsers
-	 * @return
-	 */
-	public static List<UserDTO> getListUsers(List<User> listUsers) {
+    /**
+     * @param listUsers
+     * @return
+     */
+    public static List<UserDTO> getListUsers(List<User> listUsers) {
 
-		List<UserDTO> listUsersDTO = null;
-		if (listUsers != null) {
+        List<UserDTO> listUsersDTO = null;
+        if (listUsers != null) {
 
-			listUsersDTO = listUsers.stream().map(DTOFactory::create) //
-					.collect(Collectors.toCollection(ArrayList::new));
-		}
+            listUsersDTO = listUsers.stream().map(DTOFactory::create) //
+                    .collect(Collectors.toCollection(ArrayList::new));
+        }
 
-		logger.info("[GET_LIST_USERS_DTO] DTOFactory Successful");
+        logger.info("[GET_LIST_USERS_DTO] DTOFactory Successful");
 
-		return listUsersDTO;
-	}
+        return listUsersDTO;
+    }
 
-	/**
-	 * @param user
-	 * @return
-	 */
-	public static UserDTO create(User user) {
+    /**
+     * @param user
+     * @return
+     */
+    public static UserDTO create(User user) {
 
-		UserDTO userDTO = null;
-		if (user != null) {
-			userDTO = new UserDTO();
-			BeanUtils.copyProperties(user, userDTO);
-		}
+        UserDTO userDTO = null;
+        if (user != null) {
+            userDTO = new UserDTO();
+            BeanUtils.copyProperties(user, userDTO);
+        }
 
-		return userDTO;
-	}
+        return userDTO;
+    }
 
-	/////////////////////////////////////////////////////////////
-	///////////////////////// WALLET ////////////////////////////
-	/////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////
+    ///////////////////////// WALLET ////////////////////////////
+    /////////////////////////////////////////////////////////////
 
-	/**
-	 * 
-	 * @param listWallets
-	 * @return
-	 */
-	public static List<WalletDTO> getListWallets(List<Wallet> listWallets) {
+    /**
+     * @param listWallets
+     * @return
+     */
+    public static List<WalletDTO> getListWallets(List<Wallet> listWallets) {
 
-		List<WalletDTO> listWalletsDTO = null;
-		if (listWallets != null) {
+        List<WalletDTO> listWalletsDTO = null;
+        if (listWallets != null) {
 
-			listWalletsDTO = listWallets.stream().map(DTOFactory::create)
-					.collect(Collectors.toCollection(ArrayList::new));
-		}
+            listWalletsDTO = listWallets.stream().map(DTOFactory::create)
+                    .collect(Collectors.toCollection(ArrayList::new));
+        }
 
-		logger.info("[GET_LIST_WALLETS_DTO] DTOFactory Successful");
+        logger.info("[GET_LIST_WALLETS_DTO] DTOFactory Successful");
 
-		return listWalletsDTO;
-	}
+        return listWalletsDTO;
+    }
 
-	/**
-	 * 
-	 * @param wallet
-	 * @return
-	 */
-	public static WalletDTO create(Wallet wallet) {
+    /**
+     * @param wallet
+     * @return
+     */
+    public static WalletDTO create(Wallet wallet) {
 
-		WalletDTO walletDTO = null;
+        WalletDTO walletDTO = null;
 
-		if (wallet != null) {
-			walletDTO = new WalletDTO();
-			BeanUtils.copyProperties(wallet, walletDTO);
-			walletDTO.setTypeCoin(wallet.getTypeCoin().name());
-			walletDTO.setIdUser(wallet.getUser().getIdUser());
-		}
+        if (wallet != null) {
+            walletDTO = new WalletDTO();
+            BeanUtils.copyProperties(wallet, walletDTO);
+            walletDTO.setTypeCoin(wallet.getTypeCoin().name());
+            walletDTO.setIdUser(wallet.getUser().getIdUser());
+        }
 
-		return walletDTO;
-	}
+        return walletDTO;
+    }
 
-	/////////////////////////////////////////////////////////////
-	///////////////////////// TRANSFER //////////////////////////
-	/////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////
+    ///////////////////////// TRANSFER //////////////////////////
+    /////////////////////////////////////////////////////////////
 
-	/**
-	 * 
-	 * @param listTransfers
-	 * @return
-	 */
-	public static List<TransferDTO> getListTransfers(List<Transfer> listTransfers) {
+    /**
+     * @param listTransfers
+     * @return
+     */
+    public static List<TransferDTO> getListTransfers(List<Transfer> listTransfers) {
 
-		List<TransferDTO> listTransferDTO = null;
-		if (listTransfers != null) {
+        List<TransferDTO> listTransferDTO = null;
+        if (listTransfers != null) {
 
-			listTransferDTO = listTransfers.stream().map(DTOFactory::create)
-					.collect(Collectors.toCollection(ArrayList::new));
-		}
+            listTransferDTO = listTransfers.stream().map(DTOFactory::create)
+                    .collect(Collectors.toCollection(ArrayList::new));
+        }
 
-		logger.info("[GET_LIST_TRANSFERS_DTO] DTOFactory Successful");
+        logger.info("[GET_LIST_TRANSFERS_DTO] DTOFactory Successful");
 
-		return listTransferDTO;
-	}
+        return listTransferDTO;
+    }
 
-	/**
-	 * 
-	 * @param transfer
-	 * @return
-	 */
-	public static TransferDTO create(Transfer transfer) {
+    /**
+     * @param transfer
+     * @return
+     */
+    public static TransferDTO create(Transfer transfer) {
 
-		TransferDTO transferDTO = null;
+        TransferDTO transferDTO = null;
 
-		if (transfer != null) {
+        if (transfer != null) {
 
-			transferDTO = new TransferDTO();
-			BeanUtils.copyProperties(transfer, transferDTO);
+            transferDTO = new TransferDTO();
+            BeanUtils.copyProperties(transfer, transferDTO);
 
-			////// -- ADD DATA -- //////
-			transferDTO.setTypeCoin(transfer.getTypeCoin().name());
-			transferDTO.setOriginWallet(transfer.getOriginWallet().getHash());
-			transferDTO.setDestinationWallet(transfer.getDestinationWallet().getHash());
-		}
+            ////// -- ADD DATA -- //////
+            transferDTO.setTypeCoin(transfer.getTypeCoin().name());
+            transferDTO.setOriginWallet(transfer.getOriginWallet().getHash());
+            transferDTO.setDestinationWallet(transfer.getDestinationWallet().getHash());
+        }
 
-		return transferDTO;
-	}
+        return transferDTO;
+    }
 }

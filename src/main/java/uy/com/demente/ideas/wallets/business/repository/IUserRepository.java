@@ -16,7 +16,7 @@ public interface IUserRepository extends JpaRepository<User, Long> {
 	 * @param name
 	 * @return
 	 */
-	public List<User> findByName(String name);
+	List<User> findByName(String name);
 
 	/**
 	 * Query generated with @NamedQuery
@@ -24,6 +24,6 @@ public interface IUserRepository extends JpaRepository<User, Long> {
 	 * @param email
 	 * @return
 	 */
-	public User findByEmail(String email);
+	User findByEmail(String email);
 
 }

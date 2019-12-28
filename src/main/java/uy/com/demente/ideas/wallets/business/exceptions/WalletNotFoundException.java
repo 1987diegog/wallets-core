@@ -5,7 +5,19 @@ package uy.com.demente.ideas.wallets.business.exceptions;
  */
 public class WalletNotFoundException extends NotFoundException {
 
+    public WalletNotFoundException() {
+        super();
+    }
+
+    public WalletNotFoundException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
     public WalletNotFoundException(String message) {
         super(message);
+    }
+
+    public WalletNotFoundException(Throwable cause) {
+        super(cause);
     }
 }

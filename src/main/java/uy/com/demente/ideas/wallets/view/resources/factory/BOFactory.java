@@ -23,103 +23,125 @@ import uy.com.demente.ideas.wallets.util.Utils;
  */
 public class BOFactory {
 
-	static Logger logger = LogManager.getLogger(DTOFactory.class);
+    static Logger logger = LogManager.getLogger(DTOFactory.class);
 
-	/////////////////////////////////////////////////////////////
-	////////////////////////// USER /////////////////////////////
-	/////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////
+    ////////////////////////// USER /////////////////////////////
+    /////////////////////////////////////////////////////////////
 
-	/**
-	 * 
-	 * @param listUsersDTO
-	 * @return
-	 */
-	public static List<User> getListUsers(List<UserDTO> listUsersDTO) {
+    /**
+     * @param listUsersDTO
+     * @return
+     */
+    public static List<User> getListUsers(List<UserDTO> listUsersDTO) {
 
-		List<User> listUsers = null;
+        List<User> listUsers = null;
 
-		if (listUsersDTO != null) {
-			listUsers = listUsersDTO.stream().map(BOFactory::create) //
-					.collect(Collectors.toCollection(ArrayList::new));
-		}
+        if (listUsersDTO != null) {
+            listUsers = listUsersDTO.stream().map(BOFactory::create) //
+                    .collect(Collectors.toCollection(ArrayList::new));
+        }
 
-		logger.info("[GET_LIST_USERS_BO] BOFactory Successful");
+        logger.info("[GET_LIST_USERS_BO] BOFactory Successful");
 
-		return listUsers;
-	}
+        return listUsers;
+    }
 
-	/**
-	 * 
-	 * @param userDTO
-	 * @return
-	 */
-	public static User create(UserDTO userDTO) {
+    /**
+     * @param userDTO
+     * @return
+     */
+    public static User create(UserDTO userDTO) {
 
-		User user = null;
+        logger.info("[CREATE_USER_BO] Start create user BOFactory...");
 
-		if (userDTO != null) {
-			user = new User();
-			BeanUtils.copyProperties(userDTO, user);
-		}
+        User user = null;
 
-		logger.info("[CREATE_USER_BO] BOFactory Successful");
+        if (userDTO != null) {
+            user = new User();
+            BeanUtils.copyProperties(userDTO, user);
+        }
 
-		return user;
-	}
+        logger.info("[CREATE_USER_BO] Create user BOFactory Successful");
 
-	/////////////////////////////////////////////////////////////
-	///////////////////////// WALLET ////////////////////////////
-	/////////////////////////////////////////////////////////////
+        return user;
+    }
 
-	/**
-	 * @param walletDTO
-	 * @param user
-	 * @return
-	 */
-	public static Wallet create(WalletDTO walletDTO, User user) {
+    /**
+     *
+     * @param user
+     * @param userDTO
+     * @return
+     */
+    public static User modify(User user, UserDTO userDTO) {
 
-		Wallet wallet = null;
+        logger.info("[MODIFY_USER_BO] Start modify user BOFactory...");
 
-		if (walletDTO != null) {
-			wallet = new Wallet();
-			BeanUtils.copyProperties(walletDTO, wallet);
+        if (user != null && userDTO != null) {
+            user.setAge(userDTO.getAge());
+            user.setCellphone(userDTO.getCellphone());
+            user.setEmail(userDTO.getEmail());
+            user.setLastName(userDTO.getLastName());
+            user.setUsername(userDTO.getUsername());
+        }
 
-			wallet.setTypeCoin(TypesCoins.get(walletDTO.getTypeCoin()));
-			wallet.setUser(user);
-			wallet.setCreated(new Date());
-			wallet.setHash(Utils.generateHash());
-		}
+        logger.info("[MODIFY_USER_BO] Modify user BOFactory Successful");
 
-		logger.info("[CREATE_WALLET_BO] BOFactory Successful");
+        return user;
+    }
 
-		return wallet;
-	}
+    /////////////////////////////////////////////////////////////
+    ///////////////////////// WALLET ////////////////////////////
+    /////////////////////////////////////////////////////////////
 
-	/////////////////////////////////////////////////////////////
-	//////////////////////// TRANSFER ///////////////////////////
-	/////////////////////////////////////////////////////////////
+    /**
+     * @param walletDTO
+     * @param user
+     * @return
+     */
+    public static Wallet create(WalletDTO walletDTO, User user) {
 
-	/**
-	 * 
-	 * @param transferDTO
-	 * @return
-	 */
-	public static Transfer create(TransferDTO transferDTO, Wallet originWallet, Wallet destinationWallet) {
+        Wallet wallet = null;
 
-		Transfer transfer = null;
+        if (walletDTO != null) {
+            wallet = new Wallet();
+            BeanUtils.copyProperties(walletDTO, wallet);
 
-		if (transferDTO != null) {
-			transfer = new Transfer();
-			BeanUtils.copyProperties(transferDTO, transfer);
+            wallet.setTypeCoin(TypesCoins.get(walletDTO.getTypeCoin()));
+            wallet.setUser(user);
+            wallet.setCreated(new Date());
+            wallet.setHash(Utils.generateHash());
+        }
 
-			transfer.setOriginWallet(originWallet);
-			transfer.setDestinationWallet(destinationWallet);
-			transfer.setTypeCoin(TypesCoins.get(transferDTO.getTypeCoin()));
-			transfer.setTimestamp(new Date());
-		}
+        logger.info("[CREATE_WALLET_BO] BOFactory Successful");
 
-		logger.info("[CREATE_TRANSFER_BO] BOFactory Successful");
+        return wallet;
+    }
 
-		return transfer;
-	}
+    /////////////////////////////////////////////////////////////
+    //////////////////////// TRANSFER ///////////////////////////
+    /////////////////////////////////////////////////////////////
+
+    /**
+     * @param transferDTO
+     * @return
+     */
+    public static Transfer create(TransferDTO transferDTO, Wallet originWallet, Wallet destinationWallet) {
+
+        Transfer transfer = null;
+
+        if (transferDTO != null) {
+            transfer = new Transfer();
+            BeanUtils.copyProperties(transferDTO, transfer);
+
+            transfer.setOriginWallet(originWallet);
+            transfer.setDestinationWallet(destinationWallet);
+            transfer.setTypeCoin(TypesCoins.get(transferDTO.getTypeCoin()));
+            transfer.setTimestamp(new Date());
+        }
+
+        logger.info("[CREATE_TRANSFER_BO] BOFactory Successful");
+
+        return transfer;
+    }
 }
