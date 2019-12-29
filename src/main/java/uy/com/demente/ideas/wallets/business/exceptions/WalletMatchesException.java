@@ -3,7 +3,7 @@ package uy.com.demente.ideas.wallets.business.exceptions;
 /**
  * @author 1987diegog
  */
-public class WalletMatchesException extends Exception {
+public class WalletMatchesException extends BadRequestException {
 
 	private static final long serialVersionUID = 1L;
 

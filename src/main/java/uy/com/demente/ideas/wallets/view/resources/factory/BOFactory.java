@@ -169,4 +169,20 @@ public class BOFactory {
 
         return transfer;
     }
+
+    public static Transfer modify(Transfer transfer, TransferDTO transferDTO) {
+
+        logger.info("[MODIFY_TRANSFER_BO] Start modify transfer BOFactory...");
+
+        if (transfer != null && transferDTO != null) {
+            transfer.setAmount(transferDTO.getAmount());
+            transfer.setTimestamp(transferDTO.getTimestamp());
+            transfer.setAdminName(transferDTO.getAdminName());
+            transfer.setTypeCoin(TypesCoins.get(transferDTO.getTypeCoin()));
+        }
+
+        logger.info("[MODIFY_TRANSFER_BO] Modify transfer BOFactory Successful");
+
+        return transfer;
+    }
 }

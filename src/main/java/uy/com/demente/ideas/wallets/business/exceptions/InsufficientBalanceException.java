@@ -3,7 +3,7 @@ package uy.com.demente.ideas.wallets.business.exceptions;
 /**
  * @author 1987diegog
  */
-public class InsufficientBalanceException extends Exception {
+public class InsufficientBalanceException extends PaymentRequiredException {
 
 	private static final long serialVersionUID = 1L;
 

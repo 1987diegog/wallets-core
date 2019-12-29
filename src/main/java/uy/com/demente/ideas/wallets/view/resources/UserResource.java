@@ -19,6 +19,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import uy.com.demente.ideas.wallets.business.exceptions.InternalServerErrorException;
+import uy.com.demente.ideas.wallets.business.exceptions.NotFoundException;
 import uy.com.demente.ideas.wallets.business.exceptions.UserNotFoundException;
 import uy.com.demente.ideas.wallets.business.services.UserService;
 import uy.com.demente.ideas.wallets.business.services.WalletService;
@@ -53,8 +54,8 @@ public class UserResource {
     @ApiResponses(value = { //
             @ApiResponse(code = 201, message = "User created successfully"), //
             @ApiResponse(code = 500, message = "Internal system error")})
-    public ResponseEntity<UserDTO> create(@RequestBody UserDTO userDTO) throws InternalServerErrorException {
-
+    public ResponseEntity<UserDTO> create(@RequestBody UserDTO userDTO)
+            throws InternalServerErrorException {
         try {
             logger.info("[CREATE_USER] - It will try to create the user with email: " + userDTO.getEmail());
             UserDTO response = userService.create(userDTO);
@@ -76,8 +77,8 @@ public class UserResource {
             @ApiResponse(code = 200, message = "User updated successfully"), //
             @ApiResponse(code = 404, message = "User not found"), //
             @ApiResponse(code = 500, message = "Internal system error")})
-    public ResponseEntity<UserDTO> update(@RequestBody UserDTO userDTO) throws UserNotFoundException, InternalServerErrorException {
-
+    public ResponseEntity<UserDTO> update(@RequestBody UserDTO userDTO)
+            throws NotFoundException, InternalServerErrorException {
         try {
             logger.info("[UPDATE_USER] - It will try to update the user with id: " + userDTO.getIdUser());
             UserDTO response = userService.update(userDTO);
@@ -85,7 +86,7 @@ public class UserResource {
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (UserNotFoundException e) {
             logger.info("[UPDATE_USER] [NOT_FOUND] - User not found, id: " + userDTO.getIdUser());
-            throw new UserNotFoundException("User not found, id: " + userDTO.getIdUser());
+            throw new NotFoundException("User not found, id: " + userDTO.getIdUser());
         } catch (Exception e) {
             logger.error("[UPDATE_USER] [ERROR] - Internal server error, when trying to update user data with id: "
                     + userDTO.getIdUser(), e);
@@ -101,8 +102,8 @@ public class UserResource {
             @ApiResponse(code = 200, message = "User deleted successful"), //
             @ApiResponse(code = 404, message = "User not found"), //
             @ApiResponse(code = 500, message = "Internal system error")})
-    public ResponseEntity<String> delete(@PathVariable("id") Long id) throws UserNotFoundException, InternalServerErrorException {
-
+    public ResponseEntity<String> delete(@PathVariable("id") Long id)
+            throws NotFoundException, InternalServerErrorException {
         try {
             logger.info("[DELETE_USER] - It will try to delete user with id: " + id);
             this.userService.delete(id);
@@ -110,7 +111,7 @@ public class UserResource {
             return new ResponseEntity<>("User was deleted successful, id:", HttpStatus.OK);
         } catch (UserNotFoundException e) {
             logger.info("[DELETE_USER] [NOT_FOUND] - User not found, id: " + id);
-            throw new UserNotFoundException("User not found, id: " + id);
+            throw new NotFoundException("User not found, id: " + id);
         } catch (Exception e) {
             logger.error("[DELETE_USER] [ERROR] - Internal system error when trying to delete user whit id: " + id, e);
             throw new InternalServerErrorException("Internal system error when trying to delete user whit id: " + id);
@@ -127,8 +128,8 @@ public class UserResource {
     @ApiResponses(value = { //
             @ApiResponse(code = 200, message = "Users found"), //
             @ApiResponse(code = 500, message = "Internal system error")})
-    public ResponseEntity<ListUsersDTO> findAll() throws InternalServerErrorException {
-
+    public ResponseEntity<ListUsersDTO> findAll()
+            throws InternalServerErrorException {
         try {
             logger.info("[GET_ALL_USERS] - It will try to return all system users...");
             ListUsersDTO listUsersDTO = this.userService.findAll();
@@ -148,18 +149,16 @@ public class UserResource {
             @ApiResponse(code = 200, message = "User found"), //
             @ApiResponse(code = 404, message = "User not found"), //
             @ApiResponse(code = 500, message = "Internal system error")})
-    public ResponseEntity<UserDTO> findById(@PathVariable("id") Long id) throws UserNotFoundException, InternalServerErrorException {
-
+    public ResponseEntity<UserDTO> findById(@PathVariable("id") Long id)
+            throws NotFoundException, InternalServerErrorException {
         try {
-
             logger.info("[FIND_BY_USER_ID] - It will try to return a user by id: " + id);
             UserDTO usersDTO = this.userService.findById(id);
             logger.info("[FIND_BY_USER_ID] - User found successful, id: " + id);
             return new ResponseEntity<>(usersDTO, HttpStatus.OK);
-
         } catch (UserNotFoundException e) {
             logger.info("[FIND_BY_USER_ID] [NOT_FOUND] - User not found, id: " + id);
-            throw new UserNotFoundException("User not found, id: " + id);
+            throw new NotFoundException("User not found, id: " + id);
         } catch (Exception e) {
             logger.error("[FIND_BY_USER_ID] [ERROR] - To try get user with id: " + id, e);
             throw new InternalServerErrorException("Internal server error, when trying to get user with id: " + id);
@@ -173,8 +172,8 @@ public class UserResource {
     @ApiResponses(value = { //
             @ApiResponse(code = 200, message = "User wallets found"), //
             @ApiResponse(code = 500, message = "Internal system error")})
-    public ResponseEntity<ListWalletsDTO> findWalletsByUser(@PathVariable("id") Long id) throws InternalServerErrorException {
-
+    public ResponseEntity<ListWalletsDTO> findWalletsByUser(@PathVariable("id") Long id)
+            throws InternalServerErrorException {
         try {
             logger.info("[FIND_ALL_WALLETS_BY_USER] - It will try to return all system user wallets...");
             ListWalletsDTO listWalletsDTO = this.walletService.findByUser(id);

@@ -48,12 +48,11 @@ public class TransferService {
      * @throws InsufficientBalanceException
      * @throws TypeCoinDontMatchesException
      * @throws WalletMatchesException
-     * @throws MakeTransferException
      */
     @Transactional
     public TransferDTO createTransfer(TransferDTO transferDTO)
             throws WalletNotFoundException, InsufficientBalanceException, TypeCoinDontMatchesException,
-            WalletMatchesException, MakeTransferException, BussinesServiceException {
+            WalletMatchesException, BussinesServiceException {
 
         try {
 
@@ -78,7 +77,7 @@ public class TransferService {
             return DTOFactory.create(transfer);
 
         } catch (WalletNotFoundException | WalletMatchesException |
-                TypeCoinDontMatchesException | InsufficientBalanceException | MakeTransferException e) {
+                TypeCoinDontMatchesException | InsufficientBalanceException e) {
             throw e;
         } catch (Exception e) {
             logger.error("[CREATE_TRANSFER] [ERROR] - When trying to create the object using factoryDTO", e);
@@ -105,9 +104,9 @@ public class TransferService {
             logger.info("[VALIDATE_TRANSFER] - The origin and destination wallets are different, proceed...");
         } else {
             logger.info(
-                    "[VALIDATE_TRANSFER] - The origin wallet is equal to the destination wallet, the transaction makes no sense");
+                    "[VALIDATE_TRANSFER] - The origin wallet is equal to the destination wallet, the transfer makes no sense");
             throw new WalletMatchesException(
-                    "The origin wallet is equal to the destination wallet, the transaction makes no sense");
+                    "The origin wallet is equal to the destination wallet, the transfer makes no sense");
         }
 
         /////////////////////////////////////////////////
@@ -154,10 +153,10 @@ public class TransferService {
      * @param destination
      * @param transferDTO
      * @return
-     * @throws MakeTransferException
+     * @throws BussinesServiceException
      */
     public Transfer makeTransfer(Wallet origin, Wallet destination, TransferDTO transferDTO)
-            throws MakeTransferException {
+            throws BussinesServiceException {
 
         try {
 
@@ -180,52 +179,46 @@ public class TransferService {
 
         } catch (Exception e) {
             logger.error("[MAKE_TRANSFER] [ERROR] An error occurred while trying to create the transfer", e);
-            throw new MakeTransferException("An error occurred while trying to create the transfer", e);
+            throw new BussinesServiceException("An error occurred while trying to create the transfer", e);
         }
     }
 
     /**
      * @param transferDTO
      * @return
-     * @throws NotFoundException
+     * @throws TransferNotFoundException
+     * @throws BussinesServiceException
      */
     @Transactional
     public TransferDTO update(TransferDTO transferDTO) throws TransferNotFoundException, BussinesServiceException {
+        logger.info("[TRANSFER_UPDATE] - Start, modifying transfer...");
 
         try {
             Optional<Transfer> transferToUpdate = transferRepository.findById(transferDTO.getIdTransfer());
-
             if (transferToUpdate.isPresent()) {
-
-                Transfer transfer = transferToUpdate.get();
-
-                transfer.setAmount(transferDTO.getAmount());
-                transfer.setTimestamp(transferDTO.getTimestamp());
-                transfer.setAdminName(transferDTO.getAdminName());
-                transfer.setTypeCoin(TypesCoins.get(transferDTO.getTypeCoin()));
-
+                Transfer transfer = BOFactory.modify(transferToUpdate.get(), transferDTO);
                 return DTOFactory.create(transferRepository.save(transfer));
-
             } else {
                 throw new TransferNotFoundException("Transfer not found, id: " + transferDTO.getIdTransfer());
             }
         } catch (TransferNotFoundException e) {
             throw e;
         } catch (Exception e) {
-            logger.error("[TRANSFER_UPDATE] [ERROR] - An error occurred while trying to update the transfer", e);
-            throw new BussinesServiceException("An error occurred while trying to delete the transfer", e);
+            logger.error("[TRANSFER_UPDATE] [ERROR] - An error occurred while trying to" +
+                    " update the transfer", e);
+            throw new BussinesServiceException("An error occurred while trying to update the transfer", e);
         }
     }
 
     /**
      * @param id
      * @throws NotFoundException
-     * @throws BussinesServiceException
      * @throws TransferNotFoundException
+     * @throws BussinesServiceException
      */
     @Transactional
-    public void delete(Long id) throws BussinesServiceException, TransferNotFoundException {
-
+    public void delete(Long id) throws TransferNotFoundException, BussinesServiceException {
+        logger.info("[TRANSFER_DELETE] - Start, removing transfer...");
         try {
             Optional<Transfer> optional = this.transferRepository.findById(id);
             if (optional.isPresent()) {
@@ -236,8 +229,9 @@ public class TransferService {
         } catch (TransferNotFoundException e) {
             throw e;
         } catch (Exception e) {
-            logger.error("[TRANSFER_DELETE] [ERROR] - An error occurred while trying to delete the transaction", e);
-            throw new BussinesServiceException("An error occurred while trying to delete the transaction", e);
+            logger.error("[TRANSFER_DELETE] [ERROR] - An error occurred while trying to" +
+                    " delete the transfer", e);
+            throw new BussinesServiceException("An error occurred while trying to delete the transfer", e);
         }
     }
 
@@ -251,11 +245,11 @@ public class TransferService {
     /**
      * @param id
      * @return
-     * @throws BussinesServiceException
      * @throws TransferNotFoundException
+     * @throws BussinesServiceException
      */
-    public TransferDTO findById(Long id) throws BussinesServiceException, TransferNotFoundException {
-
+    public TransferDTO findById(Long id) throws TransferNotFoundException, BussinesServiceException {
+        logger.info("[TRANSFER_FIND_BY_ID] - Start, searching transfer...");
         try {
             Optional<Transfer> optional = this.transferRepository.findById(id);
             if (optional.isPresent()) {
@@ -276,11 +270,10 @@ public class TransferService {
     /**
      * @param hash
      * @return
+     * @throws TransferNotFoundException
      * @throws BussinesServiceException
-     * @throws WalletNotFoundException
      */
-    private Wallet getWalletByHash(String hash) throws BussinesServiceException, WalletNotFoundException {
-
+    private Wallet getWalletByHash(String hash) throws WalletNotFoundException, BussinesServiceException {
         try {
             Wallet wallet = this.walletRepository.findByHash(hash);
             if (wallet == null) {
@@ -303,41 +296,35 @@ public class TransferService {
      * @param toTimestamp
      * @param originWallet
      * @return
-     * @throws BussinesServiceException
      * @throws WalletNotFoundException
+     * @throws BussinesServiceException
      */
     public ListTransfersDTO findByFilter(Date fromTimestamp, Date toTimestamp, Optional<String> originWallet)
-            throws BussinesServiceException, WalletNotFoundException {
-
+            throws WalletNotFoundException, BussinesServiceException {
+        logger.info("[TRANSFER_FIND_BY_FILTER] - Start, searching transfer...");
         try {
-
             // Set 00:00:00
             Date fromDate = DateUtils.getDateFrom(fromTimestamp);
             // Set 23:59:59
             Date toDate = DateUtils.getDateTo(toTimestamp);
-
             List<Transfer> listTransfer = this.getTransferByFilter(fromDate, toDate, originWallet);
-
             // I determine what query to apply...
             ListTransfersDTO listDTO = new ListTransfersDTO();
             if (listTransfer != null && listTransfer.isEmpty() == false) {
                 logger.info(
-                        "[TRANSFER_FIND_BY_FILTER] - The amount of transactions obtained was: " + listTransfer.size());
+                        "[TRANSFER_FIND_BY_FILTER] - The amount of transfers obtained was: " + listTransfer.size());
                 List<TransferDTO> listTransfersDTO = DTOFactory.getListTransfers(listTransfer);
                 listDTO.setTransfers(listTransfersDTO);
-
             } else {
-                logger.info("[TRANSFER_FIND_BY_FILTER] - No transactions were obtained.");
+                logger.info("[TRANSFER_FIND_BY_FILTER] - No transfers were obtained.");
             }
-
             return listDTO;
-
         } catch (WalletNotFoundException e) {
             throw e;
         } catch (Exception e) {
             logger.error("[TRANSFER_FIND_BY_FILTER] [ERROR] An error occurred while trying "
-                    + "to get the transactions by filter", e);
-            throw new BussinesServiceException("An error occurred while trying to get the transactions by filter", e);
+                    + "to get the transfers by filter", e);
+            throw new BussinesServiceException("An error occurred while trying to get the transfers by filter", e);
         }
     }
 
@@ -348,20 +335,16 @@ public class TransferService {
      * @param originWallet
      * @return
      * @throws WalletNotFoundException
+     * @throws BussinesServiceException
      */
     private List<Transfer> getTransferByFilter(Date fromDate, Date toDate, Optional<String> originWallet)
             throws WalletNotFoundException, BussinesServiceException {
-
         try {
-
             List<Transfer> listTransfer = new ArrayList<Transfer>();
             if (originWallet.isPresent()) {
-
                 logger.info("[TRANSFER_FIND_BY_FILTER] - Query params - from timestamp: " + fromDate.toString()
                         + ", to timestamp: " + toDate.toString() + ", hash origin wallet: " + originWallet.get());
-
                 Wallet wallet = walletRepository.findByHash(originWallet.get());
-
                 if (wallet != null) {
                     listTransfer = this.transferRepository.findByFilter(fromDate, toDate, wallet);
                 } else {
@@ -369,23 +352,18 @@ public class TransferService {
                     // return empty list...
                     throw new WalletNotFoundException("Hash wallet not found: " + originWallet.get());
                 }
-
             } else {
-
                 logger.info("[TRANSFER_FIND_BY_FILTER] - Query params - from timestamp: " + fromDate.toString()
                         + ", to timestamp: " + toDate.toString());
                 listTransfer = this.transferRepository.findByFilter(fromDate, toDate);
             }
-
             return listTransfer;
-
-
         } catch (WalletNotFoundException e) {
             throw e;
         } catch (Exception e) {
             logger.error("[TRANSFER_FIND_BY_FILTER] [ERROR] An error occurred while trying "
-                    + "to get the transactions by filter", e);
-            throw new BussinesServiceException("An error occurred while trying to get the transactions by filter", e);
+                    + "to get the transfers by filter", e);
+            throw new BussinesServiceException("An error occurred while trying to get the transfers by filter", e);
         }
     }
 }
