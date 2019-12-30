@@ -27,6 +27,8 @@ import uy.com.demente.ideas.wallets.model.response.ListUsersDTO;
 import uy.com.demente.ideas.wallets.model.response.ListWalletsDTO;
 import uy.com.demente.ideas.wallets.model.response.UserDTO;
 
+import javax.validation.Valid;
+
 /**
  * @author 1987diegog
  */
@@ -53,7 +55,7 @@ public class UserResource {
     @ApiResponses(value = { //
             @ApiResponse(code = 201, message = "User created successfully"), //
             @ApiResponse(code = 500, message = "Internal system error")})
-    public ResponseEntity<UserDTO> create(@RequestBody UserDTO userDTO)
+    public ResponseEntity<UserDTO> create(@Valid @RequestBody UserDTO userDTO)
             throws InternalServerErrorException {
         try {
             logger.info("[CREATE_USER] - It will try to create the user with email: " + userDTO.getEmail());
@@ -76,7 +78,7 @@ public class UserResource {
             @ApiResponse(code = 200, message = "User updated successfully"), //
             @ApiResponse(code = 404, message = "User not found"), //
             @ApiResponse(code = 500, message = "Internal system error")})
-    public ResponseEntity<UserDTO> update(@RequestBody UserDTO userDTO)
+    public ResponseEntity<UserDTO> update(@Valid @RequestBody UserDTO userDTO)
             throws NotFoundException, InternalServerErrorException {
         try {
             logger.info("[UPDATE_USER] - It will try to update the user with id: " + userDTO.getIdUser());

@@ -1,5 +1,7 @@
 package uy.com.demente.ideas.wallets.model.response;
 
+import javax.validation.constraints.NotBlank;
+
 /**
  * @author 1987diegog
  */
@@ -8,6 +10,7 @@ public class UserDTO extends PersonDTO {
 	private static final long serialVersionUID = 1L;
 
 	private Long idUser;
+	@NotBlank(message = "Username is mandatory")
 	private String username;
 	private String status;
 

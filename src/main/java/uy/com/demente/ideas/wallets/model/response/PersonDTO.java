@@ -1,5 +1,7 @@
 package uy.com.demente.ideas.wallets.model.response;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**
@@ -9,11 +11,16 @@ public abstract class PersonDTO implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	@NotBlank(message = "Name is mandatory")
 	private String name;
+	@NotBlank(message = "LastName is mandatory")
 	private String lastName;
-	private int age;
-	private String cellphone;
+	@NotBlank(message = "Email is mandatory")
 	private String email;
+	@NotBlank(message = "Cellphone is mandatory")
+	private String cellphone;
+	@NotNull(message = "Age is mandatory")
+	private int age;
 
 	public String getName() {
 		return name;
