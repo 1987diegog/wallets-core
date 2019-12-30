@@ -1,7 +1,6 @@
 package uy.com.demente.ideas.wallets.business.handler;
 
 
-import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -52,7 +51,6 @@ public class AppExceptionsHandler extends ResponseEntityExceptionHandler {
                 HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @NotNull
     private ErrorMessage getErrorMessage(Exception ex) {
         String message = ex.getLocalizedMessage();
         if (message == null) {

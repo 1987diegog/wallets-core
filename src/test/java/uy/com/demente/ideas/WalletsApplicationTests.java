@@ -113,136 +113,6 @@ public class WalletsApplicationTests {
 
     @Test
     @Order(3)
-    void testFindUserById() {
-
-        logger.info(" ----------------------------------------------------------- ");
-        logger.info(" ----------------- [TEST_FIND_USER_BY_ID] ------------------ ");
-        logger.info(" ----------------------------------------------------------- ");
-
-        Long idUser = DataForTest.getSingletonInstance().getIdUser();
-        logger.info("[TEST_FIND_USER_BY_ID] - id: " + idUser);
-
-        ResponseEntity<UserDTO> response = restTemplate.getForEntity(getRootUrl() + "/users/" + idUser, UserDTO.class);
-
-        UserDTO userFound = response.getBody();
-        logger.info("[TEST_FIND_USER_BY_ID] - User found, id: " + userFound.getIdUser());
-
-        assertSame(response.getStatusCode(), HttpStatus.OK);
-        assertNotNull(userFound);
-        assertEquals("Diego", userFound.getName());
-        assertEquals("1987diegog_test", userFound.getUsername());
-    }
-
-    @Test
-    @Order(4)
-    void testUpdateUserById() {
-
-        logger.info(" ----------------------------------------------------------- ");
-        logger.info(" ---------------- [TEST_UPDATE_USER_BY_ID] ----------------- ");
-        logger.info(" ----------------------------------------------------------- ");
-
-        UserDTO user = new UserDTO();
-
-        Long idUser = DataForTest.getSingletonInstance().getIdUser();
-        logger.info("[TEST_UPDATE_USER_BY_ID] - id: " + idUser);
-
-        user.setIdUser(idUser);
-        user.setName("Diego");
-        user.setLastName("González");
-        user.setEmail("1987diegog@gmail.com");
-        user.setStatus(Status.ENABLED.name());
-        user.setUsername("19821127diegog");
-        user.setCellphone("+59899267337");
-        user.setAge(32);
-
-        HttpHeaders headers = new HttpHeaders();
-        HttpEntity<UserDTO> entity = new HttpEntity<UserDTO>(user, headers);
-
-        ResponseEntity<UserDTO> response = restTemplate //
-                .exchange(getRootUrl() + "/users", HttpMethod.PUT, entity, UserDTO.class);
-
-        UserDTO userUpdate = response.getBody();
-
-        assertSame(response.getStatusCode(), HttpStatus.OK);
-        assertEquals("Diego", userUpdate.getName());
-        assertEquals("19821127diegog", userUpdate.getUsername());
-        assertEquals("+59899267337", userUpdate.getCellphone());
-        assertSame(32, userUpdate.getAge());
-    }
-
-    @Test
-    @Order(5)
-    void testCreateUserToDelete() {
-
-        logger.info(" ----------------------------------------------------------- ");
-        logger.info(" --------------- [TEST_CREATE_USER_TO_DELETE] -------------- ");
-        logger.info(" ----------------------------------------------------------- ");
-
-        UserDTO user = new UserDTO();
-
-        user.setName("User");
-        user.setLastName("toDelete");
-        user.setEmail("userToDelete@gmail.com");
-        user.setCellphone("+59898744578");
-        user.setStatus(Status.DISABLE.name());
-        user.setUsername("userToDelete");
-        user.setAge(99);
-
-        ResponseEntity<UserDTO> response = restTemplate.postForEntity(getRootUrl() + "/users", user, UserDTO.class);
-        UserDTO userToDelete = response.getBody();
-        DataForTest.getSingletonInstance().setIdUserToDelete(userToDelete.getIdUser());
-        logger.info("[TEST_CREATE_USER_TO_DELETE] - Assigned id: " + userToDelete.getIdUser());
-
-        assertSame(response.getStatusCode(), HttpStatus.CREATED);
-        assertNotNull(userToDelete);
-        assertEquals("User", userToDelete.getName());
-        assertEquals("userToDelete", userToDelete.getUsername());//
-    }
-
-    @Test
-    @Order(6)
-    void testDeleteUserById() {
-
-        logger.info(" ----------------------------------------------------------- ");
-        logger.info(" ---------------- [TEST_DELETE_USER_BY_ID] ----------------- ");
-        logger.info(" ----------------------------------------------------------- ");
-
-        HttpHeaders headers = new HttpHeaders();
-        HttpEntity<String> entity = new HttpEntity<String>(null, headers);
-
-        Long idUserToDelete = DataForTest.getSingletonInstance().getIdUserToDelete();
-        logger.info("[TEST_DELETE_USER_BY_ID] - id: " + idUserToDelete);
-
-        ResponseEntity<String> response = restTemplate //
-                .exchange(getRootUrl() + "/users/" + idUserToDelete, HttpMethod.DELETE, entity, String.class);
-
-        assertSame(response.getStatusCode(), HttpStatus.OK);
-    }
-
-    @Test
-    @Order(7)
-    void testGetAllUser() {
-
-        logger.info(" ----------------------------------------------------------- ");
-        logger.info(" ------------------- [TEST_GET_ALL_USER] ------------------- ");
-        logger.info(" ----------------------------------------------------------- ");
-
-        ResponseEntity<ListUsersDTO> response = restTemplate.getForEntity(getRootUrl() + "/users", ListUsersDTO.class);
-
-        ListUsersDTO list = response.getBody();
-        List<UserDTO> users = list.getUsers();
-
-        logger.info("[TEST_GET_ALL_USER] - Users size: "
-                + ((users != null && users.isEmpty() == false) ? users.size() : " sin usuarios"));
-
-        assertSame(response.getStatusCode(), HttpStatus.OK);
-        assertNotNull(list);
-        assertNotNull(users);
-
-    }
-
-    @Test
-    @Order(8)
     void testCreateOriginWalletForUser() {
 
         logger.info(" ----------------------------------------------------------- ");
@@ -274,7 +144,7 @@ public class WalletsApplicationTests {
     }
 
     @Test
-    @Order(9)
+    @Order(4)
     void testUpdateWallet() {
 
         logger.info(" ----------------------------------------------------------- ");
@@ -306,7 +176,7 @@ public class WalletsApplicationTests {
     }
 
     @Test
-    @Order(10)
+    @Order(5)
     void testCreateDestinationWalletForUser() {
 
         logger.info(" ----------------------------------------------------------- ");
@@ -335,7 +205,7 @@ public class WalletsApplicationTests {
     }
 
     @Test
-    @Order(11)
+    @Order(6)
     void testFindWalletsByUser() {
 
         logger.info(" ----------------------------------------------------------- ");
@@ -357,7 +227,7 @@ public class WalletsApplicationTests {
     }
 
     @Test
-    @Order(12)
+    @Order(7)
     void testCreateTransfer() {
 
         logger.info(" ----------------------------------------------------------- ");
@@ -388,7 +258,7 @@ public class WalletsApplicationTests {
     }
 
     @Test
-    @Order(13)
+    @Order(8)
     void testCreateTransferFailsWalletOriginNotFounds() {
 
         logger.info(" ----------------------------------------------------------- ");
@@ -415,7 +285,7 @@ public class WalletsApplicationTests {
     }
 
     @Test
-    @Order(14)
+    @Order(9)
     void testCreateTransferFailsInvalidToken() {
 
         logger.info(" ----------------------------------------------------------- ");
@@ -442,7 +312,7 @@ public class WalletsApplicationTests {
     }
 
     @Test
-    @Order(15)
+    @Order(10)
     void testCreateTransferFailsWalletMatches() {
 
         logger.info(" ----------------------------------------------------------- ");
@@ -471,7 +341,7 @@ public class WalletsApplicationTests {
     }
 
     @Test
-    @Order(16)
+    @Order(11)
     void testGetAllTransfers() {
 
         logger.info(" ----------------------------------------------------------- ");
@@ -502,7 +372,7 @@ public class WalletsApplicationTests {
     }
 
     @Test
-    @Order(17)
+    @Order(12)
     void testFindTransferById() {
 
         logger.info(" ----------------------------------------------------------- ");
@@ -524,7 +394,7 @@ public class WalletsApplicationTests {
     }
 
     @Test
-    @Order(18)
+    @Order(13)
     void testUpdateTransferById() {
 
         logger.info(" ----------------------------------------------------------- ");
@@ -558,7 +428,7 @@ public class WalletsApplicationTests {
     }
 
     @Test
-    @Order(19)
+    @Order(14)
     void testDeleteTransferById() {
 
         logger.info(" ----------------------------------------------------------- ");

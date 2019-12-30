@@ -77,11 +77,13 @@ public class BOFactory {
         logger.info("[MODIFY_USER_BO] Start modify user BOFactory...");
 
         if (user != null && userDTO != null) {
+            user.setName(userDTO.getName());
+            user.setLastName(userDTO.getLastName());
+            user.setUsername(userDTO.getUsername());
+
             user.setAge(userDTO.getAge());
             user.setCellphone(userDTO.getCellphone());
             user.setEmail(userDTO.getEmail());
-            user.setLastName(userDTO.getLastName());
-            user.setUsername(userDTO.getUsername());
         }
 
         logger.info("[MODIFY_USER_BO] Modify user BOFactory Successful");

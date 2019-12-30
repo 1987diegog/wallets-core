@@ -28,8 +28,7 @@ public abstract class Person implements Serializable {
 	@Column(name = "CELLPHONE", length = 50)
 	private String cellphone;
 
-//	@Column(name = "EMAIL", unique = true, length = 50)
-	@Column(name = "EMAIL", length = 50)
+	@Column(name = "EMAIL", unique = true, length = 50)
 	private String email;
 
 	public String getName() {

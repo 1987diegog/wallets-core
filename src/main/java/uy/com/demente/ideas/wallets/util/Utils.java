@@ -1,5 +1,9 @@
 package uy.com.demente.ideas.wallets.util;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import uy.com.demente.ideas.wallets.model.response.UserDTO;
+
 import java.util.UUID;
 
 /**

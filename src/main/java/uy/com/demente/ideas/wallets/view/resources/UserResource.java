@@ -107,7 +107,7 @@ public class UserResource {
             logger.info("[DELETE_USER] - It will try to delete user with id: " + id);
             this.userService.delete(id);
             logger.info("[DELETE_USER] - User was deleted successful, id: " + id);
-            return new ResponseEntity<>("User was deleted successful, id:", HttpStatus.OK);
+            return new ResponseEntity<>("User was deleted successful, id:" + id, HttpStatus.OK);
         } catch (UserNotFoundException e) {
             logger.info("[DELETE_USER] [NOT_FOUND] - User not found, id: " + id);
             throw new NotFoundException("User not found, id: " + id);
