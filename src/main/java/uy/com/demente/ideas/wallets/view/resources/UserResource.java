@@ -35,13 +35,12 @@ import uy.com.demente.ideas.wallets.model.response.UserDTO;
 @Api(tags = "User")
 public class UserResource {
 
-    private Logger logger;
+    private Logger logger = LogManager.getLogger(UserResource.class);
 
     private final UserService userService;
     private final WalletService walletService;
 
     public UserResource(UserService userService, WalletService walletService) {
-        logger = LogManager.getLogger(UserResource.class);
         this.userService = userService;
         this.walletService = walletService;
     }

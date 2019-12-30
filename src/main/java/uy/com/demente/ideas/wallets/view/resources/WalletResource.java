@@ -33,12 +33,11 @@ import uy.com.demente.ideas.wallets.model.response.WalletDTO;
 @Api(tags = "Wallet")
 public class WalletResource {
 
-    Logger logger;
+    Logger logger = LogManager.getLogger(WalletResource.class);
 
     private final WalletService walletService;
 
     public WalletResource(WalletService walletService) {
-        logger = LogManager.getLogger(WalletResource.class);
         this.walletService = walletService;
     }
 

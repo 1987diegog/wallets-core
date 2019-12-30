@@ -12,10 +12,15 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.*;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import uy.com.demente.ideas.wallets.WalletsApplication;
 import uy.com.demente.ideas.wallets.business.services.UserService;
+import uy.com.demente.ideas.wallets.model.User;
 import uy.com.demente.ideas.wallets.model.response.ListUsersDTO;
 import uy.com.demente.ideas.wallets.model.response.UserDTO;
 import uy.com.demente.ideas.wallets.model.Status;
@@ -25,6 +30,8 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * @author 1987diegog
@@ -47,7 +54,7 @@ public class WalletsApplicationUsersTests {
 
     @Autowired
     private WebApplicationContext wac;
-    
+
     private MockMvc mockMvc;
 
     @BeforeEach
@@ -81,13 +88,13 @@ public class WalletsApplicationUsersTests {
         user.setAge(30);
 
 
-//        this.mockMvc.perform( MockMvcRequestBuilders
-//                .post(getRootUrl() + "/users")
-//                .content(asJsonString(user))
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isCreated())
-//                .andExpect(MockMvcResultMatchers.jsonPath("$.name").exists());
+        this.mockMvc.perform(MockMvcRequestBuilders
+                .post(getRootUrl() + "/users")
+                .content(asJsonString(user))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name").exists());
 
 
         ResponseEntity<UserDTO> response = restTemplate.postForEntity(getRootUrl() + "/users", user, UserDTO.class);
@@ -103,6 +110,81 @@ public class WalletsApplicationUsersTests {
         assertEquals("Diego", userCreated.getName());
         assertEquals("19345487diegog", userCreated.getUsername());
 
+    }
+
+    @Test
+    public void insertUserStepByStep() throws Exception {
+
+        UserDTO user = new UserDTO();
+
+        user.setName("Diego");
+        user.setLastName("González");
+        user.setEmail("testDiegoG@gmail.com");
+        user.setCellphone("+59812345678");
+        user.setStatus(Status.ENABLED.name());
+        user.setUsername("19345487diegog");
+        user.setAge(30);
+
+//        final MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders
+//                .post(getRootUrl() + "/users")
+//                .content(asJsonString(user))
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .accept(MediaType.APPLICATION_JSON)).andReturn();
+
+
+        final ResultActions resultActions = this.mockMvc.perform(MockMvcRequestBuilders
+                .post(getRootUrl() + "/users")
+                .content(asJsonString(user))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON));
+
+        String json = resultActions.andReturn().getResponse().getContentAsString();
+        resultActions.andDo(print());
+        resultActions.andExpect(MockMvcResultMatchers.jsonPath("$.name").exists());
+
+        final ObjectMapper mapper = new ObjectMapper();
+        UserDTO userCreated = mapper.readValue(json, UserDTO.class);
+
+
+//        assertNotNull(result.getResponse());
+//        assertSame(result.getResponse().getStatus(), HttpStatus.CREATED);
+        assertEquals("Diego", userCreated.getName());
+        assertEquals("19345487diegog", userCreated.getUsername());
+
+        MockMvcResultMatchers.jsonPath("$.name");
+    }
+
+    @Test
+    public void insertUser() throws Exception {
+
+        UserDTO user = new UserDTO();
+
+        user.setName("Diego");
+        user.setLastName("González");
+        user.setEmail("testDiegoG@gmail.com");
+        user.setCellphone("+59812345678");
+        user.setStatus(Status.ENABLED.name());
+        user.setUsername("19345487diegog");
+        user.setAge(30);
+
+        this.mockMvc.perform(MockMvcRequestBuilders
+                .post(getRootUrl() + "/users")
+                .content(asJsonString(user))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name").exists());
+
+    }
+
+    @Test
+    public void getUserById() throws Exception {
+        this.mockMvc.perform(MockMvcRequestBuilders
+                .get(getRootUrl() + "/users/{id}", 1588)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.idUser").value(1588))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.cellphone").value("+59899267337"));
     }
 
     public static String asJsonString(final Object obj) {

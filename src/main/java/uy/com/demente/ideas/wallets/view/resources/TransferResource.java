@@ -63,7 +63,7 @@ public class TransferResource {
             @ApiResponse(code = 500, message = "Internal system error")})
     public ResponseEntity<TransferDTO> addTransfer(@RequestHeader("Session-Token") String sessionToken,
                                                    @RequestBody TransferDTO transferDTO)
-            throws NotFoundException, BadRequestException, PaymentRequiredException,
+            throws BadRequestException, PaymentRequiredException,
             UnauthorizedException, InternalServerErrorException {
         try {
             securityService.validateSessionToken(sessionToken);
@@ -79,7 +79,7 @@ public class TransferResource {
         } catch (WalletMatchesException e) {
             logger.error("[ADD_TRANSFER] [ERROR] - " + e.getLocalizedMessage());
             throw new BadRequestException(e.getLocalizedMessage());
-        } catch (TypeCoinDontMatchesException e) {
+        } catch (TypeCoinException e) {
             logger.error("[ADD_TRANSFER] [ERROR] - " + e.getLocalizedMessage());
             throw new BadRequestException(e.getLocalizedMessage());
         } catch (InsufficientBalanceException e) {

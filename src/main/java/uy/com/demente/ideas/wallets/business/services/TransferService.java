@@ -46,12 +46,12 @@ public class TransferService {
      * @return
      * @throws WalletNotFoundException
      * @throws InsufficientBalanceException
-     * @throws TypeCoinDontMatchesException
+     * @throws TypeCoinException
      * @throws WalletMatchesException
      */
     @Transactional
     public TransferDTO createTransfer(TransferDTO transferDTO)
-            throws WalletNotFoundException, InsufficientBalanceException, TypeCoinDontMatchesException,
+            throws WalletNotFoundException, InsufficientBalanceException, TypeCoinException,
             WalletMatchesException, BussinesServiceException {
 
         try {
@@ -67,7 +67,8 @@ public class TransferService {
             logger.info("[CREATE_TRANSFER] - The destination wallet was obtained successfully...");
 
             // Validate if is possible the transfer
-            this.validateTransfer(originWallet, destinationWallet, transferDTO.getAmount());
+            this.validateTransfer(originWallet, destinationWallet, transferDTO.getAmount(),
+                    transferDTO.getTypeCoin());
             logger.info("[CREATE_TRANSFER] - The validation was successful...");
 
             Transfer transfer = this.makeTransfer(originWallet, destinationWallet, transferDTO);
@@ -77,7 +78,7 @@ public class TransferService {
             return DTOFactory.create(transfer);
 
         } catch (WalletNotFoundException | WalletMatchesException |
-                TypeCoinDontMatchesException | InsufficientBalanceException e) {
+                TypeCoinException | InsufficientBalanceException e) {
             throw e;
         } catch (Exception e) {
             logger.error("[CREATE_TRANSFER] [ERROR] - When trying to create the object using factoryDTO", e);
@@ -89,29 +90,36 @@ public class TransferService {
      * @param origin
      * @param destination
      * @param amount
+     * @param typeCoin
      * @throws WalletMatchesException
-     * @throws TypeCoinDontMatchesException
+     * @throws TypeCoinException
      * @throws InsufficientBalanceException
      */
-    public void validateTransfer(Wallet origin, Wallet destination, BigDecimal amount)
-            throws WalletMatchesException, TypeCoinDontMatchesException, InsufficientBalanceException {
+    public void validateTransfer(Wallet origin, Wallet destination, BigDecimal amount, String typeCoin)
+            throws WalletMatchesException, TypeCoinException, InsufficientBalanceException {
 
         /////////////////////////////////////////////////
         ////////////////// - WALLETS - //////////////////
         /////////////////////////////////////////////////
 
         if (origin.getIdWallet().equals(destination.getIdWallet()) == false) {
-            logger.info("[VALIDATE_TRANSFER] - The origin and destination wallets are different, proceed...");
+            logger.info("[VALIDATE_TRANSFER] - The origin and destination wallets " +
+                    "are different, proceed...");
         } else {
-            logger.info(
-                    "[VALIDATE_TRANSFER] - The origin wallet is equal to the destination wallet, the transfer makes no sense");
-            throw new WalletMatchesException(
-                    "The origin wallet is equal to the destination wallet, the transfer makes no sense");
+            logger.info("[VALIDATE_TRANSFER] - The origin wallet is equal to the destination " +
+                    "wallet, the transfer makes no sense");
+            throw new WalletMatchesException("The origin wallet is equal to the destination " +
+                    "wallet, the transfer makes no sense");
         }
 
         /////////////////////////////////////////////////
         ///////////////// - TYPE COIN - /////////////////
         /////////////////////////////////////////////////
+
+        if(TypesCoins.get(typeCoin) == null) {
+            logger.info("[VALIDATE_TRANSFER] - The type of currency does not exist");
+            throw new TypeCoinException("The type of currency does not exist");
+        }
 
         if (origin.getTypeCoin().equals(destination.getTypeCoin())) {
             logger.info("[VALIDATE_TRANSFER] - The type of currency is the same, proceed...");
@@ -120,7 +128,7 @@ public class TransferService {
             // ----- this.conversionCurrency(); --------
             // ------------------------------------
             logger.info("[VALIDATE_TRANSFER] - The type of currency is different");
-            throw new TypeCoinDontMatchesException("The type of currency is different");
+            throw new TypeCoinException("The type of currency is different");
         }
 
         /////////////////////////////////////////////////
@@ -130,13 +138,13 @@ public class TransferService {
         // Check if the balance of the original wallet is greater than or equal to the
         // one you want to transfer ...
         if (origin.getBalance().compareTo(amount) >= 0) {
-            logger.info(
-                    "[VALIDATE_TRANSFER] - The original wallet has the same or more balance as requested in the transfer, proceed...");
+            logger.info("[VALIDATE_TRANSFER] - The original wallet has the same " +
+                    "or more balance as requested in the transfer, proceed...");
         } else {
-            logger.info(
-                    "[VALIDATE_TRANSFER] - The balance to be transferred is greater than that of the original wallet");
-            throw new InsufficientBalanceException(
-                    "The balance to be transferred is greater than that of the original wallet");
+            logger.info("[VALIDATE_TRANSFER] - The balance to be transferred is greater " +
+                    "than balance of the original wallet");
+            throw new InsufficientBalanceException("The balance to be transferred is greater " +
+                    "than balance of the original wallet");
         }
     }
 
