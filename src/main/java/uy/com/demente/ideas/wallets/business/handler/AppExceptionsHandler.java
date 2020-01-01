@@ -26,7 +26,7 @@ public class AppExceptionsHandler  {
     }
 
     @ExceptionHandler(value = {BadRequestException.class})
-    public ResponseEntity<Object> handleBadRequestException
+    public ResponseEntity<ErrorMessage> handleBadRequestException
             (BadRequestException ex, WebRequest request) {
         return new ResponseEntity<>(this.getErrorMessage(ex), new HttpHeaders(),
                 HttpStatus.BAD_REQUEST);
