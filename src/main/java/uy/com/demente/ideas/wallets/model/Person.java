@@ -1,17 +1,23 @@
 package uy.com.demente.ideas.wallets.model;
 
-import java.io.Serializable;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.Column;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.MappedSuperclass;
+import java.io.Serializable;
+import java.util.Date;
+
+import javax.persistence.*;
 
 /**
  * @author 1987diegog
  */
 @MappedSuperclass
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@EntityListeners(AuditingEntityListener.class)
+@JsonIgnoreProperties(value = {"createdAt", "updatedAt"},
+		allowGetters = true)
 public abstract class Person implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -30,6 +36,24 @@ public abstract class Person implements Serializable {
 
 	@Column(name = "EMAIL", unique = true, length = 50)
 	private String email;
+
+
+	// In our Note model we have annotated createdAt and updatedAt fields with @CreatedDate and @LastModifiedDate
+	// annotations respectively. Now, what we want is that these fields should automatically get populated
+	// whenever we create or update an entity. To achieve this, we need to do two things -
+
+	// 1. Add Spring Data JPA’s AuditingEntityListener to the domain model @EntityListeners(AuditingEntityListener.class).
+	// 2. Enable JPA Auditing in the main application (@EnableJpaAuditing)
+
+	@Column(name="CREATED", nullable = false, updatable = false)
+	@Temporal(TemporalType.TIMESTAMP)
+	@CreatedDate
+	private Date createdAt;
+
+	@Column(name="UPDATED", nullable = false)
+	@Temporal(TemporalType.TIMESTAMP)
+	@LastModifiedDate
+	private Date updatedAt;
 
 	public String getName() {
 		return name;
