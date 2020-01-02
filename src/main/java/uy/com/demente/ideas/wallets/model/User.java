@@ -1,6 +1,7 @@
 package uy.com.demente.ideas.wallets.model;
 
 import javax.persistence.*;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -69,42 +70,18 @@ public class User extends Person {
 	}
 
 	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((idUser == null) ? 0 : idUser.hashCode());
-		result = prime * result + ((status == null) ? 0 : status.hashCode());
-		result = prime * result + ((username == null) ? 0 : username.hashCode());
-		result = prime * result + ((wallets == null) ? 0 : wallets.hashCode());
-		return result;
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		User user = (User) o;
+		return Objects.equals(idUser, user.idUser) &&
+				Objects.equals(username, user.username) &&
+				status == user.status &&
+				Objects.equals(wallets, user.wallets);
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (!super.equals(obj))
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		User other = (User) obj;
-		if (idUser == null) {
-			if (other.idUser != null)
-				return false;
-		} else if (!idUser.equals(other.idUser))
-			return false;
-		if (status != other.status)
-			return false;
-		if (username == null) {
-			if (other.username != null)
-				return false;
-		} else if (!username.equals(other.username))
-			return false;
-		if (wallets == null) {
-			if (other.wallets != null)
-				return false;
-		} else if (!wallets.equals(other.wallets))
-			return false;
-		return true;
+	public int hashCode() {
+		return Objects.hash(idUser, username, status, wallets);
 	}
 }

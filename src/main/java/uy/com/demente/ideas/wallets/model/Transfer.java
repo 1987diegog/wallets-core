@@ -3,6 +3,7 @@ package uy.com.demente.ideas.wallets.model;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -20,6 +21,8 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 /**
  * @author 1987diegog
@@ -51,9 +54,15 @@ public class Transfer implements Serializable {
 	@Column(name = "TYPE_COIN")
 	private TypesCoins typeCoin;
 
+	@Column(name="CREATED", nullable = false, updatable = false)
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "TIMESTAMP")
-	private Date timestamp;
+	@CreatedDate
+	private Date createdAt;
+
+	@Column(name="UPDATED", nullable = false)
+	@Temporal(TemporalType.TIMESTAMP)
+	@LastModifiedDate
+	private Date updatedAt;
 
 	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -99,12 +108,20 @@ public class Transfer implements Serializable {
 		this.amount = amount;
 	}
 
-	public Date getTimestamp() {
-		return timestamp;
+	public Date getCreatedAt() {
+		return createdAt;
 	}
 
-	public void setTimestamp(Date timestamp) {
-		this.timestamp = timestamp;
+	public void setCreatedAt(Date createdAt) {
+		this.createdAt = createdAt;
+	}
+
+	public Date getUpdatedAt() {
+		return updatedAt;
+	}
+
+	public void setUpdatedAt(Date updatedAt) {
+		this.updatedAt = updatedAt;
 	}
 
 	public Wallet getOriginWallet() {
@@ -124,60 +141,22 @@ public class Transfer implements Serializable {
 	}
 
 	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((adminName == null) ? 0 : adminName.hashCode());
-		result = prime * result + ((amount == null) ? 0 : amount.hashCode());
-		result = prime * result + ((destinationWallet == null) ? 0 : destinationWallet.hashCode());
-		result = prime * result + ((idTransfer == null) ? 0 : idTransfer.hashCode());
-		result = prime * result + ((originWallet == null) ? 0 : originWallet.hashCode());
-		result = prime * result + ((timestamp == null) ? 0 : timestamp.hashCode());
-		result = prime * result + ((typeCoin == null) ? 0 : typeCoin.hashCode());
-		return result;
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Transfer transfer = (Transfer) o;
+		return Objects.equals(idTransfer, transfer.idTransfer) &&
+				Objects.equals(adminName, transfer.adminName) &&
+				Objects.equals(amount, transfer.amount) &&
+				typeCoin == transfer.typeCoin &&
+				Objects.equals(createdAt, transfer.createdAt) &&
+				Objects.equals(updatedAt, transfer.updatedAt) &&
+				Objects.equals(originWallet, transfer.originWallet) &&
+				Objects.equals(destinationWallet, transfer.destinationWallet);
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Transfer other = (Transfer) obj;
-		if (adminName == null) {
-			if (other.adminName != null)
-				return false;
-		} else if (!adminName.equals(other.adminName))
-			return false;
-		if (amount == null) {
-			if (other.amount != null)
-				return false;
-		} else if (!amount.equals(other.amount))
-			return false;
-		if (destinationWallet == null) {
-			if (other.destinationWallet != null)
-				return false;
-		} else if (!destinationWallet.equals(other.destinationWallet))
-			return false;
-		if (idTransfer == null) {
-			if (other.idTransfer != null)
-				return false;
-		} else if (!idTransfer.equals(other.idTransfer))
-			return false;
-		if (originWallet == null) {
-			if (other.originWallet != null)
-				return false;
-		} else if (!originWallet.equals(other.originWallet))
-			return false;
-		if (timestamp == null) {
-			if (other.timestamp != null)
-				return false;
-		} else if (!timestamp.equals(other.timestamp))
-			return false;
-		if (typeCoin != other.typeCoin)
-			return false;
-		return true;
+	public int hashCode() {
+		return Objects.hash(idTransfer, adminName, amount, typeCoin, createdAt, updatedAt, originWallet, destinationWallet);
 	}
 }

@@ -13,8 +13,8 @@ import uy.com.demente.ideas.wallets.model.User;
 import uy.com.demente.ideas.wallets.model.Wallet;
 import uy.com.demente.ideas.wallets.model.response.ListWalletsDTO;
 import uy.com.demente.ideas.wallets.model.response.WalletDTO;
-import uy.com.demente.ideas.wallets.view.resources.factory.BOFactory;
-import uy.com.demente.ideas.wallets.view.resources.factory.DTOFactory;
+import uy.com.demente.ideas.wallets.factorys.BOFactory;
+import uy.com.demente.ideas.wallets.factorys.DTOFactory;
 
 import java.util.List;
 import java.util.Optional;

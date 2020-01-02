@@ -1,26 +1,13 @@
 package uy.com.demente.ideas.wallets.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.data.annotation.CreatedDate;
+
+import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.ForeignKey;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Objects;
 
 /**
  * @author 1987diegog
@@ -56,9 +43,10 @@ public class Wallet implements Serializable {
 	@Column(name = "TYPE_COIN")
 	private TypesCoins typeCoin;
 
+	@Column(name="CREATED", nullable = false, updatable = false)
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "CREATED")
-	private Date created;
+	@CreatedDate
+	private Date createdAt;
 
 	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -106,12 +94,12 @@ public class Wallet implements Serializable {
 		this.typeCoin = typeCoin;
 	}
 
-	public Date getCreated() {
-		return created;
+	public Date getCreatedAt() {
+		return createdAt;
 	}
 
-	public void setCreated(Date created) {
-		this.created = created;
+	public void setCreatedAt(Date createdAt) {
+		this.createdAt = createdAt;
 	}
 
 	public User getUser() {
@@ -123,61 +111,21 @@ public class Wallet implements Serializable {
 	}
 
 	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((balance == null) ? 0 : balance.hashCode());
-		result = prime * result + ((created == null) ? 0 : created.hashCode());
-		result = prime * result + ((hash == null) ? 0 : hash.hashCode());
-		result = prime * result + ((idWallet == null) ? 0 : idWallet.hashCode());
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + ((typeCoin == null) ? 0 : typeCoin.hashCode());
-		result = prime * result + ((user == null) ? 0 : user.hashCode());
-		return result;
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Wallet wallet = (Wallet) o;
+		return Objects.equals(idWallet, wallet.idWallet) &&
+				Objects.equals(hash, wallet.hash) &&
+				Objects.equals(name, wallet.name) &&
+				Objects.equals(balance, wallet.balance) &&
+				typeCoin == wallet.typeCoin &&
+				Objects.equals(createdAt, wallet.createdAt) &&
+				Objects.equals(user, wallet.user);
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Wallet other = (Wallet) obj;
-		if (balance == null) {
-			if (other.balance != null)
-				return false;
-		} else if (!balance.equals(other.balance))
-			return false;
-		if (created == null) {
-			if (other.created != null)
-				return false;
-		} else if (!created.equals(other.created))
-			return false;
-		if (hash == null) {
-			if (other.hash != null)
-				return false;
-		} else if (!hash.equals(other.hash))
-			return false;
-		if (idWallet == null) {
-			if (other.idWallet != null)
-				return false;
-		} else if (!idWallet.equals(other.idWallet))
-			return false;
-		if (name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!name.equals(other.name))
-			return false;
-		if (typeCoin != other.typeCoin)
-			return false;
-		if (user == null) {
-			if (other.user != null)
-				return false;
-		} else if (!user.equals(other.user))
-			return false;
-		return true;
+	public int hashCode() {
+		return Objects.hash(idWallet, hash, name, balance, typeCoin, createdAt, user);
 	}
-
 }

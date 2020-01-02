@@ -5,4 +5,15 @@ package uy.com.demente.ideas.wallets.model;
  */
 public enum Status {
 	ENABLED, DISABLE;
+
+    public static Status get(String status) {
+
+        if (ENABLED.name().equals(status)) {
+            return ENABLED;
+        } else if (DISABLE.name().equals(status)) {
+            return DISABLE;
+        }
+
+        return null;
+    }
 }

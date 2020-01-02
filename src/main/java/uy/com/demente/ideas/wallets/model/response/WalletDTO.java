@@ -17,7 +17,7 @@ public class WalletDTO implements Serializable {
 	private String name;
 	private BigDecimal balance;
 	private String typeCoin;
-	private Date created;
+	private Date createdAt;
 
 	public Long getIdWallet() {
 		return idWallet;
@@ -67,11 +67,11 @@ public class WalletDTO implements Serializable {
 		this.typeCoin = typeCoin;
 	}
 
-	public Date getCreated() {
-		return created;
+	public Date getCreatedAt() {
+		return createdAt;
 	}
 
-	public void setCreated(Date created) {
-		this.created = created;
+	public void setCreatedAt(Date createdAt) {
+		this.createdAt = createdAt;
 	}
 }

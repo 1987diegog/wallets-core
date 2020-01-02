@@ -22,6 +22,8 @@ public interface ITransferRepository extends JpaRepository<Transfer, Long> {
 	 */
 	List<Transfer> findByTypeCoin(String typeCoin);
 
+	List<Transfer> findByCreatedAtBetween(Date from, Date to);
+
 	/**
 	 * Spring Data Query Method
 	 * 
@@ -30,7 +32,7 @@ public interface ITransferRepository extends JpaRepository<Transfer, Long> {
 	 * @param originWallet
 	 * @return
 	 */
-	@Query("SELECT t FROM Transfer t WHERE t.timestamp >=:from AND t.timestamp <=:to AND t.originWallet =:originWallet")
+	@Query("SELECT t FROM Transfer t WHERE t.createdAt >=:from AND t.createdAt <=:to AND t.originWallet =:originWallet")
 	List<Transfer> findByFilter(@Param("from") Date from, @Param("to") Date to,
 			@Param("originWallet") Wallet originWallet);
 
@@ -41,6 +43,6 @@ public interface ITransferRepository extends JpaRepository<Transfer, Long> {
 	 * @param to
 	 * @return
 	 */
-	@Query("SELECT t FROM Transfer t WHERE t.timestamp >=:from AND t.timestamp <=:to")
-	List<Transfer> findByFilter(@Param("from") Date from, @Param("to") Date to);
+//	@Query("SELECT t FROM Transfer t WHERE t.timestamp >=:from AND t.timestamp <=:to")
+//	List<Transfer> findByFilter(@Param("from") Date from, @Param("to") Date to);
 }

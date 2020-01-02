@@ -1,28 +1,27 @@
 package uy.com.demente.ideas.wallets.business.services;
 
+import javassist.NotFoundException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import uy.com.demente.ideas.wallets.business.exceptions.*;
+import uy.com.demente.ideas.wallets.business.repository.ITransferRepository;
+import uy.com.demente.ideas.wallets.business.repository.IWalletRepository;
+import uy.com.demente.ideas.wallets.factorys.BOFactory;
+import uy.com.demente.ideas.wallets.model.Transfer;
+import uy.com.demente.ideas.wallets.model.TypesCoins;
+import uy.com.demente.ideas.wallets.model.Wallet;
+import uy.com.demente.ideas.wallets.model.response.ListTransfersDTO;
+import uy.com.demente.ideas.wallets.model.response.TransferDTO;
+import uy.com.demente.ideas.wallets.util.DateUtils;
+import uy.com.demente.ideas.wallets.factorys.DTOFactory;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import javassist.NotFoundException;
-import uy.com.demente.ideas.wallets.business.exceptions.*;
-import uy.com.demente.ideas.wallets.business.repository.ITransferRepository;
-import uy.com.demente.ideas.wallets.business.repository.IWalletRepository;
-import uy.com.demente.ideas.wallets.model.response.ListTransfersDTO;
-import uy.com.demente.ideas.wallets.model.response.TransferDTO;
-import uy.com.demente.ideas.wallets.model.Transfer;
-import uy.com.demente.ideas.wallets.model.TypesCoins;
-import uy.com.demente.ideas.wallets.model.Wallet;
-import uy.com.demente.ideas.wallets.util.DateUtils;
-import uy.com.demente.ideas.wallets.view.resources.factory.BOFactory;
-import uy.com.demente.ideas.wallets.view.resources.factory.DTOFactory;
 
 /**
  * @author 1987diegog
@@ -363,7 +362,8 @@ public class TransferService {
             } else {
                 logger.info("[TRANSFER_FIND_BY_FILTER] - Query params - from timestamp: " + fromDate.toString()
                         + ", to timestamp: " + toDate.toString());
-                listTransfer = this.transferRepository.findByFilter(fromDate, toDate);
+//                listTransfer = this.transferRepository.findByFilter(fromDate, toDate);
+                listTransfer = this.transferRepository.findByCreatedAtBetween(fromDate, toDate);
             }
             return listTransfer;
         } catch (WalletNotFoundException e) {

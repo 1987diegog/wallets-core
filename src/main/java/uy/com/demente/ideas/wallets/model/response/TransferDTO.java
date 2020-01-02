@@ -15,7 +15,7 @@ public class TransferDTO implements Serializable {
 	private String adminName;
 	private BigDecimal amount;
 	private String typeCoin;
-	private Date timestamp;
+	private Date createdAt;
 	private String originWallet;
 	private String destinationWallet;
 
@@ -51,12 +51,12 @@ public class TransferDTO implements Serializable {
 		this.amount = amount;
 	}
 
-	public Date getTimestamp() {
-		return timestamp;
+	public Date getCreatedAt() {
+		return createdAt;
 	}
 
-	public void setTimestamp(Date timestamp) {
-		this.timestamp = timestamp;
+	public void setCreatedAt(Date createdAt) {
+		this.createdAt = createdAt;
 	}
 
 	public String getOriginWallet() {

@@ -126,7 +126,7 @@ public class WalletsApplicationTests {
         WalletDTO wallet = new WalletDTO();
         wallet.setIdUser(idUser);
         wallet.setBalance(new BigDecimal(8000));
-        wallet.setCreated(new Date());
+        wallet.setCreatedAt(new Date());
         wallet.setName("MyWalletOrigin");
         wallet.setTypeCoin(TypesCoins.PAGACOIN.name());
 
@@ -188,7 +188,7 @@ public class WalletsApplicationTests {
         WalletDTO wallet = new WalletDTO();
         wallet.setIdUser(2L);
         wallet.setBalance(new BigDecimal(0));
-        wallet.setCreated(new Date());
+        wallet.setCreatedAt(new Date());
         wallet.setName("MyWalletDestination");
         wallet.setTypeCoin(TypesCoins.PAGACOIN.name());
 

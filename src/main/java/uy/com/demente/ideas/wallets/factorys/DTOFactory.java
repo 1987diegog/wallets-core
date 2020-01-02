@@ -1,4 +1,4 @@
-package uy.com.demente.ideas.wallets.view.resources.factory;
+package uy.com.demente.ideas.wallets.factorys;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +54,11 @@ public class DTOFactory {
         if (user != null) {
             userDTO = new UserDTO();
             BeanUtils.copyProperties(user, userDTO);
+
+            //////////////////////////////////////////////////
+            // Additional attributes or data types to adapt //
+            //////////////////////////////////////////////////
+            userDTO.setStatus(user.getStatus().name());
         }
 
         return userDTO;
@@ -92,8 +97,12 @@ public class DTOFactory {
         if (wallet != null) {
             walletDTO = new WalletDTO();
             BeanUtils.copyProperties(wallet, walletDTO);
-            walletDTO.setTypeCoin(wallet.getTypeCoin().name());
+
+            //////////////////////////////////////////////////
+            // Additional attributes or data types to adapt //
+            //////////////////////////////////////////////////
             walletDTO.setIdUser(wallet.getUser().getIdUser());
+            walletDTO.setTypeCoin(wallet.getTypeCoin().name());
         }
 
         return walletDTO;
@@ -130,11 +139,12 @@ public class DTOFactory {
         TransferDTO transferDTO = null;
 
         if (transfer != null) {
-
             transferDTO = new TransferDTO();
             BeanUtils.copyProperties(transfer, transferDTO);
 
-            ////// -- ADD DATA -- //////
+            //////////////////////////////////////////////////
+            // Additional attributes or data types to adapt //
+            //////////////////////////////////////////////////
             transferDTO.setTypeCoin(transfer.getTypeCoin().name());
             transferDTO.setOriginWallet(transfer.getOriginWallet().getHash());
             transferDTO.setDestinationWallet(transfer.getDestinationWallet().getHash());

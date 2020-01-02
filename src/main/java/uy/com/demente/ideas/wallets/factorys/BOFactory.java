@@ -1,4 +1,4 @@
-package uy.com.demente.ideas.wallets.view.resources.factory;
+package uy.com.demente.ideas.wallets.factorys;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -9,13 +9,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.BeanUtils;
 
+import uy.com.demente.ideas.wallets.model.*;
 import uy.com.demente.ideas.wallets.model.response.TransferDTO;
 import uy.com.demente.ideas.wallets.model.response.UserDTO;
 import uy.com.demente.ideas.wallets.model.response.WalletDTO;
-import uy.com.demente.ideas.wallets.model.Transfer;
-import uy.com.demente.ideas.wallets.model.TypesCoins;
-import uy.com.demente.ideas.wallets.model.User;
-import uy.com.demente.ideas.wallets.model.Wallet;
 import uy.com.demente.ideas.wallets.util.Utils;
 
 /**
@@ -60,6 +57,11 @@ public class BOFactory {
         if (userDTO != null) {
             user = new User();
             BeanUtils.copyProperties(userDTO, user);
+
+            //////////////////////////////////////////////////
+            // Additional attributes or data types to adapt //
+            //////////////////////////////////////////////////
+            user.setStatus(Status.get(userDTO.getStatus()));
         }
 
         logger.info("[CREATE_USER_BO] Create user BOFactory Successful");
@@ -80,10 +82,10 @@ public class BOFactory {
             user.setName(userDTO.getName());
             user.setLastName(userDTO.getLastName());
             user.setUsername(userDTO.getUsername());
-
             user.setAge(userDTO.getAge());
             user.setCellphone(userDTO.getCellphone());
             user.setEmail(userDTO.getEmail());
+            user.setStatus(Status.get(userDTO.getStatus()));
         }
 
         logger.info("[MODIFY_USER_BO] Modify user BOFactory Successful");
@@ -110,10 +112,11 @@ public class BOFactory {
             wallet = new Wallet();
             BeanUtils.copyProperties(walletDTO, wallet);
 
-            // Additional attributes or data types to adapt
+            //////////////////////////////////////////////////
+            // Additional attributes or data types to adapt //
+            //////////////////////////////////////////////////
             wallet.setUser(user);
             wallet.setTypeCoin(TypesCoins.get(walletDTO.getTypeCoin()));
-            wallet.setCreated(new Date());
             wallet.setHash(Utils.generateHash());
         }
 
@@ -160,11 +163,13 @@ public class BOFactory {
             transfer = new Transfer();
             BeanUtils.copyProperties(transferDTO, transfer);
 
-            // Additional attributes or data types to adapt
+            //////////////////////////////////////////////////
+            // Additional attributes or data types to adapt //
+            //////////////////////////////////////////////////
             transfer.setOriginWallet(originWallet);
             transfer.setDestinationWallet(destinationWallet);
             transfer.setTypeCoin(TypesCoins.get(transferDTO.getTypeCoin()));
-            transfer.setTimestamp(new Date());
+            transfer.setCreatedAt(new Date());
         }
 
         logger.info("[CREATE_TRANSFER_BO] Create transfer BOFactory Successful");
@@ -178,7 +183,7 @@ public class BOFactory {
 
         if (transfer != null && transferDTO != null) {
             transfer.setAmount(transferDTO.getAmount());
-            transfer.setTimestamp(transferDTO.getTimestamp());
+            transfer.setCreatedAt(transferDTO.getCreatedAt());
             transfer.setAdminName(transferDTO.getAdminName());
             transfer.setTypeCoin(TypesCoins.get(transferDTO.getTypeCoin()));
         }

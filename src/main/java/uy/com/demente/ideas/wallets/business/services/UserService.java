@@ -14,8 +14,8 @@ import uy.com.demente.ideas.wallets.business.repository.IUserRepository;
 import uy.com.demente.ideas.wallets.model.response.ListUsersDTO;
 import uy.com.demente.ideas.wallets.model.response.UserDTO;
 import uy.com.demente.ideas.wallets.model.User;
-import uy.com.demente.ideas.wallets.view.resources.factory.BOFactory;
-import uy.com.demente.ideas.wallets.view.resources.factory.DTOFactory;
+import uy.com.demente.ideas.wallets.factorys.BOFactory;
+import uy.com.demente.ideas.wallets.factorys.DTOFactory;
 
 /**
  * @author 1987diegog
