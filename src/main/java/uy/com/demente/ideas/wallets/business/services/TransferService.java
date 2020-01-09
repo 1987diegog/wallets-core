@@ -10,11 +10,11 @@ import uy.com.demente.ideas.wallets.business.repository.ITransferRepository;
 import uy.com.demente.ideas.wallets.business.repository.IWalletRepository;
 import uy.com.demente.ideas.wallets.factorys.BOFactory;
 import uy.com.demente.ideas.wallets.model.Transfer;
-import uy.com.demente.ideas.wallets.model.TypesCoins;
+import uy.com.demente.ideas.wallets.model.TypeCoin;
 import uy.com.demente.ideas.wallets.model.Wallet;
 import uy.com.demente.ideas.wallets.model.response.ListTransfersDTO;
 import uy.com.demente.ideas.wallets.model.response.TransferDTO;
-import uy.com.demente.ideas.wallets.util.DateUtils;
+import uy.com.demente.ideas.wallets.utils.DateUtil;
 import uy.com.demente.ideas.wallets.factorys.DTOFactory;
 
 import java.math.BigDecimal;
@@ -115,7 +115,7 @@ public class TransferService {
         ///////////////// - TYPE COIN - /////////////////
         /////////////////////////////////////////////////
 
-        if(TypesCoins.get(typeCoin) == null) {
+        if(TypeCoin.get(typeCoin) == null) {
             logger.info("[VALIDATE_TRANSFER] - The type of currency does not exist");
             throw new TypeCoinException("The type of currency does not exist");
         }
@@ -150,7 +150,7 @@ public class TransferService {
     /**
      *
      */
-    public void conversionCurrency(BigDecimal amount, TypesCoins fromCoin, TypesCoins toCoin) {
+    public void conversionCurrency(BigDecimal amount, TypeCoin fromCoin, TypeCoin toCoin) {
         // TODO: If contemplated, a currency transformation could be made, for example
         // from PAGACOIN to DOLLARS and then from DOLLARS to BITCOIN
     }
@@ -311,9 +311,9 @@ public class TransferService {
         logger.info("[TRANSFER_FIND_BY_FILTER] - Start, searching transfer...");
         try {
             // Set 00:00:00
-            Date fromDate = DateUtils.getDateFrom(fromTimestamp);
+            Date fromDate = DateUtil.getDateFrom(fromTimestamp);
             // Set 23:59:59
-            Date toDate = DateUtils.getDateTo(toTimestamp);
+            Date toDate = DateUtil.getDateTo(toTimestamp);
             List<Transfer> listTransfer = this.getTransferByFilter(fromDate, toDate, originWallet);
             // I determine what query to apply...
             ListTransfersDTO listDTO = new ListTransfersDTO();

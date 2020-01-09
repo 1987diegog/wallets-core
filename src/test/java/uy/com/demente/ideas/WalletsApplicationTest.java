@@ -25,7 +25,7 @@ import org.springframework.web.client.RestTemplate;
 import uy.com.demente.ideas.wallets.WalletsApplication;
 import uy.com.demente.ideas.wallets.business.services.UserService;
 import uy.com.demente.ideas.wallets.model.Status;
-import uy.com.demente.ideas.wallets.model.TypesCoins;
+import uy.com.demente.ideas.wallets.model.TypeCoin;
 import uy.com.demente.ideas.wallets.model.response.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -37,9 +37,9 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest(classes = WalletsApplication.class, //
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class WalletsApplicationTests {
+public class WalletsApplicationTest {
 
-    private Logger logger = LogManager.getLogger(WalletsApplicationTests.class);
+    private Logger logger = LogManager.getLogger(WalletsApplicationTest.class);
 
     @Autowired
     private UserService userService;
@@ -56,7 +56,7 @@ public class WalletsApplicationTests {
 
     @Test
     @Order(1)
-    void testCreateOriginUser() {
+    void testCreateOriginUser() throws Exception {
 
         logger.info(" ----------------------------------------------------------- ");
         logger.info(" ---------------- [TEST_CREATE_ORIGIN_USER] ---------------- ");
@@ -128,7 +128,7 @@ public class WalletsApplicationTests {
         wallet.setBalance(new BigDecimal(8000));
         wallet.setCreatedAt(new Date());
         wallet.setName("MyWalletOrigin");
-        wallet.setTypeCoin(TypesCoins.PAGACOIN.name());
+        wallet.setTypeCoin(TypeCoin.PAGACOIN.name());
 
         ResponseEntity<WalletDTO> response = restTemplate.postForEntity(getRootUrl() + "/wallets", wallet,
                 WalletDTO.class);
@@ -162,7 +162,7 @@ public class WalletsApplicationTests {
         wallet.setIdUser(idUser);
         wallet.setBalance(new BigDecimal(500));
         wallet.setName("NameUpdate");
-        wallet.setTypeCoin(TypesCoins.PAGACOIN.name());
+        wallet.setTypeCoin(TypeCoin.PAGACOIN.name());
 
         HttpHeaders headers = new HttpHeaders();
         HttpEntity<WalletDTO> entity = new HttpEntity<WalletDTO>(wallet, headers);
@@ -190,7 +190,7 @@ public class WalletsApplicationTests {
         wallet.setBalance(new BigDecimal(0));
         wallet.setCreatedAt(new Date());
         wallet.setName("MyWalletDestination");
-        wallet.setTypeCoin(TypesCoins.PAGACOIN.name());
+        wallet.setTypeCoin(TypeCoin.PAGACOIN.name());
 
         ResponseEntity<WalletDTO> response = restTemplate.postForEntity(getRootUrl() + "/wallets", wallet,
                 WalletDTO.class);
@@ -241,7 +241,7 @@ public class WalletsApplicationTests {
         transfer.setAmount(new BigDecimal(500));
         transfer.setOriginWallet(DataForTest.getSingletonInstance().getHashOriginWallet());
         transfer.setDestinationWallet(DataForTest.getSingletonInstance().getHashDestinationWallet());
-        transfer.setTypeCoin(TypesCoins.PAGACOIN.name());
+        transfer.setTypeCoin(TypeCoin.PAGACOIN.name());
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Session-Token", "token-valido");
@@ -272,7 +272,7 @@ public class WalletsApplicationTests {
         transfer.setAmount(new BigDecimal(900000));
         transfer.setOriginWallet(DataForTest.getSingletonInstance().getHashOriginWallet());
         transfer.setDestinationWallet(DataForTest.getSingletonInstance().getHashDestinationWallet());
-        transfer.setTypeCoin(TypesCoins.PAGACOIN.name());
+        transfer.setTypeCoin(TypeCoin.PAGACOIN.name());
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Session-Token", "token-valido");
@@ -301,7 +301,7 @@ public class WalletsApplicationTests {
         transfer.setAmount(new BigDecimal(500));
         transfer.setOriginWallet(DataForTest.getSingletonInstance().getHashOriginWallet());
         transfer.setDestinationWallet(DataForTest.getSingletonInstance().getHashOriginWallet());
-        transfer.setTypeCoin(TypesCoins.PAGACOIN.name());
+        transfer.setTypeCoin(TypeCoin.PAGACOIN.name());
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Session-Token", "INVALID_SESSION_TOKEN");
@@ -351,7 +351,7 @@ public class WalletsApplicationTests {
         transfer.setAmount(new BigDecimal(500));
         transfer.setOriginWallet(DataForTest.getSingletonInstance().getHashOriginWallet());
         transfer.setDestinationWallet(DataForTest.getSingletonInstance().getHashOriginWallet());
-        transfer.setTypeCoin(TypesCoins.PAGACOIN.name());
+        transfer.setTypeCoin(TypeCoin.PAGACOIN.name());
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Session-Token", "token-valido");
@@ -418,7 +418,7 @@ public class WalletsApplicationTests {
 
         assertSame(response.getStatusCode(), HttpStatus.OK);
         assertNotNull(transferFound);
-        assertEquals(transferFound.getTypeCoin(), TypesCoins.PAGACOIN.name());
+        assertEquals(transferFound.getTypeCoin(), TypeCoin.PAGACOIN.name());
         assertSame(0, transferFound.getAmount().compareTo(new BigDecimal(500))); ////
     }
 
@@ -440,7 +440,7 @@ public class WalletsApplicationTests {
         transfer.setAmount(new BigDecimal(1000));
         transfer.setOriginWallet(DataForTest.getSingletonInstance().getHashOriginWallet());
         transfer.setDestinationWallet(DataForTest.getSingletonInstance().getHashDestinationWallet());
-        transfer.setTypeCoin(TypesCoins.PAGACOIN.name());
+        transfer.setTypeCoin(TypeCoin.PAGACOIN.name());
 
         HttpHeaders headers = new HttpHeaders();
         HttpEntity<TransferDTO> entity = new HttpEntity<TransferDTO>(transfer, headers);

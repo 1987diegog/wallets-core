@@ -32,9 +32,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 @SpringBootTest(classes = WalletsApplication.class, //
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class UserResourceTests {
+public class UserResourceTest {
 
-    private Logger logger = LogManager.getLogger(UserResourceTests.class);
+    private Logger logger = LogManager.getLogger(UserResourceTest.class);
 
     @LocalServerPort
     public int port;

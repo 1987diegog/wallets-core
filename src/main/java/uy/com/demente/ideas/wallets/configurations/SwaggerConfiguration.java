@@ -1,4 +1,4 @@
-package uy.com.demente.ideas.wallets.util;
+package uy.com.demente.ideas.wallets.configurations;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.RestController;

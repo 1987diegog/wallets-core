@@ -1,4 +1,4 @@
-package uy.com.demente.ideas.wallets.controller;
+package uy.com.demente.ideas.wallets.controllers;
 
 import org.springframework.ui.Model;
 import org.springframework.stereotype.Controller;

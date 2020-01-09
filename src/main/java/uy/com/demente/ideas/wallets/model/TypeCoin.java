@@ -3,7 +3,7 @@ package uy.com.demente.ideas.wallets.model;
 /**
  * @author 1987diegog
  */
-public enum TypesCoins {
+public enum TypeCoin {
 
 	PAGACOIN, //
 	BITCOIN, //
@@ -12,7 +12,7 @@ public enum TypesCoins {
 	LITECOIN, //
 	TRON;
 
-	public static TypesCoins get(String typeCoin) {
+	public static TypeCoin get(String typeCoin) {
 
 		if (PAGACOIN.name().equals(typeCoin)) {
 			return PAGACOIN;

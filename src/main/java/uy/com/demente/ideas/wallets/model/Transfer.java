@@ -5,30 +5,19 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Objects;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.ForeignKey;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 /**
  * @author 1987diegog
  */
 @Entity
 @Table(name = "PAGACOIN_T_TRANSFERS")
+@EntityListeners(AuditingEntityListener.class)
 public class Transfer implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -52,7 +41,7 @@ public class Transfer implements Serializable {
 
 	@Enumerated(value = EnumType.STRING)
 	@Column(name = "TYPE_COIN")
-	private TypesCoins typeCoin;
+	private TypeCoin typeCoin;
 
 	@Column(name="CREATED", nullable = false, updatable = false)
 	@Temporal(TemporalType.TIMESTAMP)
@@ -76,11 +65,11 @@ public class Transfer implements Serializable {
 			foreignKey = @ForeignKey(name = "FK_DESTINATION_WALLET"))
 	private Wallet destinationWallet;
 
-	public TypesCoins getTypeCoin() {
+	public TypeCoin getTypeCoin() {
 		return typeCoin;
 	}
 
-	public void setTypeCoin(TypesCoins typeCoin) {
+	public void setTypeCoin(TypeCoin typeCoin) {
 		this.typeCoin = typeCoin;
 	}
 

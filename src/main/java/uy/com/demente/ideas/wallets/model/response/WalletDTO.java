@@ -1,5 +1,6 @@
 package uy.com.demente.ideas.wallets.model.response;
 
+import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -12,11 +13,16 @@ public class WalletDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private Long idWallet;
-	private Long idUser;
-	private String hash;
+	@NotBlank(message = "Name is mandatory")
 	private String name;
+	@NotBlank(message = "User id is mandatory")
+	private Long idUser;
+	@NotBlank(message = "Balance is mandatory")
 	private BigDecimal balance;
+	@NotBlank(message = "Type coin is mandatory")
 	private String typeCoin;
+
+	private String hash;
 	private Date createdAt;
 
 	public Long getIdWallet() {

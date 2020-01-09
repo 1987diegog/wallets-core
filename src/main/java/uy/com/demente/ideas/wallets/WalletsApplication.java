@@ -4,12 +4,11 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
-//@SpringBootApplication(exclude = { SecurityAutoConfiguration.class })
-
 /**
  * @author 1987diegog
  */
 @SpringBootApplication()
+//@SpringBootApplication(exclude = { SecurityAutoConfiguration.class })
 @EnableJpaAuditing
 public class WalletsApplication {
 
@@ -17,3 +16,4 @@ public class WalletsApplication {
 		SpringApplication.run(WalletsApplication.class, args);
 	}
 }
+

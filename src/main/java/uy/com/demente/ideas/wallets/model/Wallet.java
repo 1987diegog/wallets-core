@@ -2,6 +2,8 @@ package uy.com.demente.ideas.wallets.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -15,6 +17,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "PAGACOIN_T_WALLETS")
 @NamedQuery(name = "Wallet.findByHash", query = "SELECT w FROM Wallet w WHERE w.hash = ?1")
+@EntityListeners(AuditingEntityListener.class)
 public class Wallet implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -41,12 +44,17 @@ public class Wallet implements Serializable {
 
 	@Enumerated(value = EnumType.STRING)
 	@Column(name = "TYPE_COIN")
-	private TypesCoins typeCoin;
+	private TypeCoin typeCoin;
 
 	@Column(name="CREATED", nullable = false, updatable = false)
 	@Temporal(TemporalType.TIMESTAMP)
 	@CreatedDate
 	private Date createdAt;
+
+	@Column(name="UPDATED", nullable = false)
+	@Temporal(TemporalType.TIMESTAMP)
+	@LastModifiedDate
+	private Date updatedAt;
 
 	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -86,11 +94,11 @@ public class Wallet implements Serializable {
 		this.balance = balance;
 	}
 
-	public TypesCoins getTypeCoin() {
+	public TypeCoin getTypeCoin() {
 		return typeCoin;
 	}
 
-	public void setTypeCoin(TypesCoins typeCoin) {
+	public void setTypeCoin(TypeCoin typeCoin) {
 		this.typeCoin = typeCoin;
 	}
 
@@ -100,6 +108,14 @@ public class Wallet implements Serializable {
 
 	public void setCreatedAt(Date createdAt) {
 		this.createdAt = createdAt;
+	}
+
+	public Date getUpdatedAt() {
+		return updatedAt;
+	}
+
+	public void setUpdatedAt(Date updatedAt) {
+		this.updatedAt = updatedAt;
 	}
 
 	public User getUser() {

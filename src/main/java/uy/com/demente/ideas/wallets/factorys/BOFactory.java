@@ -13,7 +13,7 @@ import uy.com.demente.ideas.wallets.model.*;
 import uy.com.demente.ideas.wallets.model.response.TransferDTO;
 import uy.com.demente.ideas.wallets.model.response.UserDTO;
 import uy.com.demente.ideas.wallets.model.response.WalletDTO;
-import uy.com.demente.ideas.wallets.util.Utils;
+import uy.com.demente.ideas.wallets.utils.HashKeyUtil;
 
 /**
  * @author 1987diegog
@@ -116,8 +116,8 @@ public class BOFactory {
             // Additional attributes or data types to adapt //
             //////////////////////////////////////////////////
             wallet.setUser(user);
-            wallet.setTypeCoin(TypesCoins.get(walletDTO.getTypeCoin()));
-            wallet.setHash(Utils.generateHash());
+            wallet.setTypeCoin(TypeCoin.get(walletDTO.getTypeCoin()));
+            wallet.setHash(HashKeyUtil.generateHash());
         }
 
         logger.info("[CREATE_WALLET_BO] Create wallet BOFactory Successful");
@@ -137,7 +137,7 @@ public class BOFactory {
         if (wallet != null && walletDTO != null) {
             wallet.setBalance(walletDTO.getBalance());
             wallet.setName(walletDTO.getName());
-            wallet.setTypeCoin(TypesCoins.get(walletDTO.getTypeCoin()));
+            wallet.setTypeCoin(TypeCoin.get(walletDTO.getTypeCoin()));
         }
 
         logger.info("[MODIFY_WALLET_BO] Modify wallet BOFactory Successful");
@@ -168,7 +168,7 @@ public class BOFactory {
             //////////////////////////////////////////////////
             transfer.setOriginWallet(originWallet);
             transfer.setDestinationWallet(destinationWallet);
-            transfer.setTypeCoin(TypesCoins.get(transferDTO.getTypeCoin()));
+            transfer.setTypeCoin(TypeCoin.get(transferDTO.getTypeCoin()));
             transfer.setCreatedAt(new Date());
         }
 
@@ -185,7 +185,7 @@ public class BOFactory {
             transfer.setAmount(transferDTO.getAmount());
             transfer.setCreatedAt(transferDTO.getCreatedAt());
             transfer.setAdminName(transferDTO.getAdminName());
-            transfer.setTypeCoin(TypesCoins.get(transferDTO.getTypeCoin()));
+            transfer.setTypeCoin(TypeCoin.get(transferDTO.getTypeCoin()));
         }
 
         logger.info("[MODIFY_TRANSFER_BO] Modify transfer BOFactory Successful");
