@@ -260,7 +260,7 @@ public class WalletsResourceTest {
 
         resultActions.andDo(print());
         resultActions.andExpect(MockMvcResultMatchers.jsonPath("$.name").value("MyWalletTestUpdated"));
-//        resultActions.andExpect(MockMvcResultMatchers.jsonPath("$.balance").value(new BigDecimal(150_000.0)));
+        // resultActions.andExpect(MockMvcResultMatchers.jsonPath("$.balance").value(new BigDecimal(150_000.0)));
 
         MvcResult result = resultActions.andReturn();
         String json = result.getResponse().getContentAsString();
@@ -269,7 +269,7 @@ public class WalletsResourceTest {
         assertEquals(result.getResponse().getStatus(), HttpStatus.OK.value());
         assertNotNull(walletDTO);
         assertEquals("MyWalletTestUpdated", walletDTO.getName());
-//        assertEquals(walletDTO.getBalance(), new BigDecimal(150_000));//
+        // assertEquals(walletDTO.getBalance(), new BigDecimal(150_000));//
     }
 
 
