@@ -169,7 +169,6 @@ public class BOFactory {
             transfer.setOriginWallet(originWallet);
             transfer.setDestinationWallet(destinationWallet);
             transfer.setTypeCoin(TypeCoin.get(transferDTO.getTypeCoin()));
-            transfer.setCreatedAt(new Date());
         }
 
         logger.info("[CREATE_TRANSFER_BO] Create transfer BOFactory Successful");
@@ -183,7 +182,6 @@ public class BOFactory {
 
         if (transfer != null && transferDTO != null) {
             transfer.setAmount(transferDTO.getAmount());
-            transfer.setCreatedAt(transferDTO.getCreatedAt());
             transfer.setAdminName(transferDTO.getAdminName());
             transfer.setTypeCoin(TypeCoin.get(transferDTO.getTypeCoin()));
         }
