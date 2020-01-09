@@ -21,10 +21,12 @@ import org.springframework.web.context.WebApplicationContext;
 import uy.com.demente.ideas.wallets.WalletsApplication;
 import uy.com.demente.ideas.wallets.model.Status;
 import uy.com.demente.ideas.wallets.model.TypeCoin;
+import uy.com.demente.ideas.wallets.model.Wallet;
 import uy.com.demente.ideas.wallets.model.response.ListUsersDTO;
 import uy.com.demente.ideas.wallets.model.response.ListWalletsDTO;
 import uy.com.demente.ideas.wallets.model.response.UserDTO;
 import uy.com.demente.ideas.wallets.model.response.WalletDTO;
+import uy.com.demente.ideas.wallets.view.resources.WalletResource;
 
 import java.math.BigDecimal;
 
@@ -51,11 +53,16 @@ public class WalletsResourceTest {
 
     private MockMvc mockMvc;
     private ObjectMapper mapper;
-    private static Long idUser;
-    private static Long idWallet;
+    private static WalletDTO walletDTO;
+    private static long idUser;
 
-    public String getRootUrl() {
-        return "http://localhost:" + port + "/api/v1";
+
+    public String getRootUrlUser() {
+        return "http://localhost:" + port + "/api/v1/users";
+    }
+
+    public String getRootUrlWallet() {
+        return "http://localhost:" + port + "/api/v1/wallets";
     }
 
     @BeforeEach
@@ -95,7 +102,7 @@ public class WalletsResourceTest {
         logger.info("[TEST_CREATE_USER] - Call mock mvc...");
 
         ResultActions resultActions = this.mockMvc.perform(MockMvcRequestBuilders
-                .post(getRootUrl() + "/users")
+                .post(getRootUrlUser())
                 .content(jsonContent)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON));
@@ -137,14 +144,14 @@ public class WalletsResourceTest {
 
         logger.info("[TEST_CREATE_WALLET] - Creating wallet data...");
 
-        WalletDTO walletDTO = new WalletDTO();
+        WalletDTO createWalletDTO = new WalletDTO();
 
-        walletDTO.setIdUser(idUser);
-        walletDTO.setName("MyWalletTest");
-        walletDTO.setTypeCoin(TypeCoin.BITCOIN.name());
-        walletDTO.setBalance(new BigDecimal(50_000));
+        createWalletDTO.setIdUser(idUser);
+        createWalletDTO.setName("MyWalletTest");
+        createWalletDTO.setTypeCoin(TypeCoin.ETHEREUM.name());
+        createWalletDTO.setBalance(new BigDecimal(50_000));
 
-        String jsonContent = mapper.writeValueAsString(walletDTO);
+        String jsonContent = mapper.writeValueAsString(createWalletDTO);
 
         /////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////
@@ -152,7 +159,7 @@ public class WalletsResourceTest {
         logger.info("[TEST_CREATE_WALLET] - Call mock mvc...");
 
         ResultActions resultActions = this.mockMvc.perform(MockMvcRequestBuilders
-                .post(getRootUrl() + "/wallets")
+                .post(getRootUrlWallet())
                 .content(jsonContent)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON));
@@ -164,206 +171,167 @@ public class WalletsResourceTest {
 
         resultActions.andDo(print());
         resultActions.andExpect(MockMvcResultMatchers.jsonPath("$.name").value("MyWalletTest"));
-        resultActions.andExpect(MockMvcResultMatchers.jsonPath("$.typeCoin").value("BITCOIN"));
+        resultActions.andExpect(MockMvcResultMatchers.jsonPath("$.typeCoin").value("ETHEREUM"));
 
         MvcResult result = resultActions.andReturn();
         String json = result.getResponse().getContentAsString();
-        WalletDTO walletCreated = mapper.readValue(json, WalletDTO.class);
+        // I save the created object
+        walletDTO = mapper.readValue(json, WalletDTO.class);
 
-        // I save the id of the created object
-        idWallet = walletCreated.getIdWallet();
-        logger.info("[TEST_CREATE_WALLET] - Assigned id: " + walletCreated.getIdWallet());
+        logger.info("[TEST_CREATE_WALLET] - Assigned id: " + walletDTO.getIdWallet());
 
         assertEquals(result.getResponse().getStatus(), HttpStatus.CREATED.value());
-        assertNotNull(walletCreated);
-        assertEquals("MyWalletTest", walletCreated.getName());
-        assertEquals("BITCOIN", walletCreated.getTypeCoin());
+        assertNotNull(walletDTO);
+        assertEquals("MyWalletTest", walletDTO.getName());
+        assertEquals("ETHEREUM", walletDTO.getTypeCoin());
     }
-//
-//    @Test
-//    @Order(2)
-//    void testUpdateUserById() throws Exception {
-//
-//        logger.info(" ----------------------------------------------------------- ");
-//        logger.info(" ---------------- [TEST_UPDATE_USER_BY_ID] ----------------- ");
-//        logger.info(" ----------------------------------------------------------- ");
-//
-//        /////////////////////////////////////////////////////////////////////////////
-//        /////////////////////////////////////////////////////////////////////////////
-//
-//        logger.info("[TEST_UPDATE_USER_BY_ID] - Updating user data, id: " + idUser);
-//
-//        UserDTO user = new UserDTO();
-//
-//        user.setIdUser(idUser);
-//        user.setName("Diego Andres");
-//        user.setLastName("Gonzalez Durand");
-//        user.setEmail("1987diegogTestUpdate@gmail.com");
-//        user.setStatus(Status.DISABLE.name());
-//        user.setUsername("1987diegogTestUpdate");
-//        user.setCellphone("+59899267337");
-//        user.setAge(30);
-//
-//        String jsonContent = mapper.writeValueAsString(user);
-//
-//        /////////////////////////////////////////////////////////////////////////////
-//        /////////////////////////////////////////////////////////////////////////////
-//
-//        logger.info("[TEST_UPDATE_USER_BY_ID] - Call mock mvc...");
-//
-//        ResultActions resultActions = this.mockMvc.perform(MockMvcRequestBuilders
-//                .put(getRootUrl() + "/users")
-//                .content(jsonContent)
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .accept(MediaType.APPLICATION_JSON));
-//
-//        /////////////////////////////////////////////////////////////////////////////
-//        /////////////////////////////////////////////////////////////////////////////
-//
-//        logger.info("[TEST_UPDATE_USER_BY_ID] - Process results...");
-//
-//        resultActions.andDo(print());
-//        resultActions.andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Diego Andres"));
-//        resultActions.andExpect(MockMvcResultMatchers.jsonPath("$.email").value("1987diegogTestUpdate@gmail.com"));
-//
-//        MvcResult result = resultActions.andReturn();
-//        String json = result.getResponse().getContentAsString();
-//        UserDTO userUpdated = mapper.readValue(json, UserDTO.class);
-//
-//        assertEquals(result.getResponse().getStatus(), HttpStatus.OK.value());
-//        assertNotNull(userUpdated);
-//        assertEquals("Diego Andres", userUpdated.getName());
-//        assertEquals("1987diegogTestUpdate@gmail.com", userUpdated.getEmail());
-//
-//    }
-//
-//    @Test
-//    @Order(3)
-//    public void getUserById() throws Exception {
-//
-//        logger.info(" ----------------------------------------------------------- ");
-//        logger.info(" ----------------- [TEST_FIND_USER_BY_ID] ------------------ ");
-//        logger.info(" ----------------------------------------------------------- ");
-//
-//        /////////////////////////////////////////////////////////////////////////////
-//        /////////////////////////////////////////////////////////////////////////////
-//
-//        logger.info("[TEST_FIND_USER_BY_ID] - Call mock mvc...");
-//
-//        ResultActions resultActions = this.mockMvc.perform(MockMvcRequestBuilders
-//                .get(getRootUrl() + "/users/{id}", idUser)
-//                .accept(MediaType.APPLICATION_JSON));
-//
-//        /////////////////////////////////////////////////////////////////////////////
-//        /////////////////////////////////////////////////////////////////////////////
-//
-//        logger.info("[TEST_FIND_USER_BY_ID] - Process results...");
-//
-//        resultActions.andDo(print());
-//        resultActions.andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Diego Andres"));
-//        resultActions.andExpect(MockMvcResultMatchers.jsonPath("$.email").value("1987diegogTestUpdate@gmail.com"));
-//
-//        MvcResult result = resultActions.andReturn();
-//        String json = result.getResponse().getContentAsString();
-//        UserDTO user = mapper.readValue(json, UserDTO.class);
-//
-//        assertEquals(result.getResponse().getStatus(), HttpStatus.OK.value());
-//        assertNotNull(user);
-//        assertEquals("Diego Andres", user.getName());
-//        assertEquals("1987diegogTestUpdate@gmail.com", user.getEmail());
-//    }
-//
-//
-//
-//    @Test
-//    @Order(4)
-//    public void findAllUsers() throws Exception {
-//
-//        logger.info(" ----------------------------------------------------------- ");
-//        logger.info(" ------------------ [TEST_FIND_ALL_USERS] ------------------ ");
-//        logger.info(" ----------------------------------------------------------- ");
-//
-//        /////////////////////////////////////////////////////////////////////////////
-//        /////////////////////////////////////////////////////////////////////////////
-//
-//        logger.info("[TEST_FIND_ALL_USERS] - Call mock mvc...");
-//
-//        ResultActions resultActions = this.mockMvc.perform(MockMvcRequestBuilders
-//                .get(getRootUrl() + "/users")
-//                .accept(MediaType.APPLICATION_JSON));
-//
-//        /////////////////////////////////////////////////////////////////////////////
-//        /////////////////////////////////////////////////////////////////////////////
-//
-//        logger.info("[TEST_FIND_ALL_USERS] - Process results...");
-//
-//        resultActions.andDo(print());
-//
-//        MvcResult result = resultActions.andReturn();
-//        String json = result.getResponse().getContentAsString();
-//        ListUsersDTO list = mapper.readValue(json, ListUsersDTO.class);
-//
-//        assertEquals(result.getResponse().getStatus(), HttpStatus.OK.value());
-//        assertNotNull(list);
-//    }
-//
-//    @Test
-//    @Order(5)
-//    public void findWalletsByUser() throws Exception {
-//
-//        logger.info(" ----------------------------------------------------------- ");
-//        logger.info(" --------------- [TEST_FIND_WALLETS_BY_USER] --------------- ");
-//        logger.info(" ----------------------------------------------------------- ");
-//
-//        /////////////////////////////////////////////////////////////////////////////
-//        /////////////////////////////////////////////////////////////////////////////
-//
-//        logger.info("[TEST_FIND_WALLETS_BY_USER] - Call mock mvc...");
-//
-//        ResultActions resultActions = this.mockMvc.perform(MockMvcRequestBuilders
-//                .get(getRootUrl() + "/users/{id}/wallets", idUser)
-//                .accept(MediaType.APPLICATION_JSON));
-//
-//        /////////////////////////////////////////////////////////////////////////////
-//        /////////////////////////////////////////////////////////////////////////////
-//
-//        logger.info("[TEST_FIND_WALLETS_BY_USER] - Process results...");
-//
-//        resultActions.andDo(print());
-//
-//        MvcResult result = resultActions.andReturn();
-//        String json = result.getResponse().getContentAsString();
-//        ListWalletsDTO list = mapper.readValue(json, ListWalletsDTO.class);
-//
-//        assertEquals(result.getResponse().getStatus(), HttpStatus.OK.value());
-//        assertNotNull(list);
-//    }
-//
-//    @Test
-//    @Order(6)
-//    public void deleteUserById() throws Exception {
-//
-//        logger.info(" ----------------------------------------------------------- ");
-//        logger.info(" ----------------- [TEST_DELETE_USER_BY_ID] ------------------ ");
-//        logger.info(" ----------------------------------------------------------- ");
-//
-//        /////////////////////////////////////////////////////////////////////////////
-//        /////////////////////////////////////////////////////////////////////////////
-//
-//        logger.info("[TEST_DELETE_USER_BY_ID] - Call mock mvc...");
-//
-//        ResultActions resultActions = this.mockMvc.perform(MockMvcRequestBuilders
-//                .delete(getRootUrl() + "/users/{id}", idUser)
-//                .accept(MediaType.APPLICATION_JSON));
-//
-//        /////////////////////////////////////////////////////////////////////////////
-//        /////////////////////////////////////////////////////////////////////////////
-//
-//        logger.info("[TEST_DELETE_USER_BY_ID] - Process results...");
-//
-//        resultActions.andDo(print());
-//        assertEquals(resultActions.andReturn().getResponse().getStatus(), HttpStatus.OK.value());
-//    }
+
+    @Test
+    @Order(3)
+    void testUpdateWalletById() throws Exception {
+
+        logger.info(" ----------------------------------------------------------- ");
+        logger.info(" --------------- [TEST_UPDATE_WALLET_BY_ID] ---------------- ");
+        logger.info(" ----------------------------------------------------------- ");
+
+        /////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////
+
+        logger.info("[TEST_UPDATE_WALLET_BY_ID] - Updating wallet data, id: " + walletDTO.getIdWallet());
+
+        walletDTO.setName("MyWalletTestUpdated");
+        walletDTO.setTypeCoin(TypeCoin.BITCOIN.name());
+        walletDTO.setBalance(new BigDecimal(150_000));
+        String jsonContent = mapper.writeValueAsString(walletDTO);
+
+        /////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////
+
+        logger.info("[TEST_UPDATE_WALLET_BY_ID] - Call mock mvc...");
+
+        ResultActions resultActions = this.mockMvc.perform(MockMvcRequestBuilders
+                .put(getRootUrlWallet())
+                .content(jsonContent)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON));
+
+        /////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////
+
+        logger.info("[TEST_UPDATE_WALLET_BY_ID] - Process results...");
+
+        resultActions.andDo(print());
+        resultActions.andExpect(MockMvcResultMatchers.jsonPath("$.name").value("MyWalletTestUpdated"));
+        resultActions.andExpect(MockMvcResultMatchers.jsonPath("$.balance").value(new BigDecimal(150_000)));
+
+        MvcResult result = resultActions.andReturn();
+        String json = result.getResponse().getContentAsString();
+        walletDTO = mapper.readValue(json, WalletDTO.class);
+
+        assertEquals(result.getResponse().getStatus(), HttpStatus.OK.value());
+        assertNotNull(walletDTO);
+        assertEquals("MyWalletTestUpdated", walletDTO.getName());
+        assertEquals(walletDTO.getBalance(), new BigDecimal(150_000));//
+
+    }
+
+
+    @Test
+    @Order(4)
+    public void getWalletByHash() throws Exception {
+
+        logger.info(" ----------------------------------------------------------- ");
+        logger.info(" --------------- [TEST_FIND_WALLET_BY_HASH] ---------------- ");
+        logger.info(" ----------------------------------------------------------- ");
+
+        /////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////
+
+        logger.info("[TEST_FIND_WALLET_BY_HASH] - Call mock mvc...");
+
+        ResultActions resultActions = this.mockMvc.perform(MockMvcRequestBuilders
+                .get(getRootUrlWallet() + "/{hash}", walletDTO.getHash())
+                .accept(MediaType.APPLICATION_JSON));
+
+        /////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////
+
+        logger.info("[TEST_FIND_WALLET_BY_HASH] - Process results...");
+
+        resultActions.andDo(print());
+        resultActions.andExpect(MockMvcResultMatchers.jsonPath("$.name").value("MyWalletTestUpdated"));
+//        resultActions.andExpect(MockMvcResultMatchers.jsonPath("$.balance").value(new BigDecimal(150_000.0)));
+
+        MvcResult result = resultActions.andReturn();
+        String json = result.getResponse().getContentAsString();
+        walletDTO = mapper.readValue(json, WalletDTO.class);
+
+        assertEquals(result.getResponse().getStatus(), HttpStatus.OK.value());
+        assertNotNull(walletDTO);
+        assertEquals("MyWalletTestUpdated", walletDTO.getName());
+//        assertEquals(walletDTO.getBalance(), new BigDecimal(150_000));//
+    }
+
+
+    @Test
+    @Order(5)
+    public void findAllWallets() throws Exception {
+
+        logger.info(" ----------------------------------------------------------- ");
+        logger.info(" ----------------- [TEST_FIND_ALL_WALLETS] ----------------- ");
+        logger.info(" ----------------------------------------------------------- ");
+
+        /////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////
+
+        logger.info("[TEST_FIND_ALL_WALLETS] - Call mock mvc...");
+
+        ResultActions resultActions = this.mockMvc.perform(MockMvcRequestBuilders
+                .get(getRootUrlWallet())
+                .accept(MediaType.APPLICATION_JSON));
+
+        /////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////
+
+        logger.info("[TEST_FIND_ALL_USERS] - Process results...");
+
+        resultActions.andDo(print());
+
+        MvcResult result = resultActions.andReturn();
+        String json = result.getResponse().getContentAsString();
+        ListWalletsDTO list = mapper.readValue(json, ListWalletsDTO.class);
+
+        assertEquals(result.getResponse().getStatus(), HttpStatus.OK.value());
+        assertNotNull(list);
+    }
+
+    @Test
+    @Order(6)
+    public void deleteWalletById() throws Exception {
+
+        logger.info(" ----------------------------------------------------------- ");
+        logger.info(" --------------- [TEST_DELETE_WALLET_BY_ID] ---------------- ");
+        logger.info(" ----------------------------------------------------------- ");
+
+        /////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////
+
+        logger.info("[TEST_DELETE_WALLET_BY_ID] - Call mock mvc...");
+
+        ResultActions resultActions = this.mockMvc.perform(MockMvcRequestBuilders
+                .delete(getRootUrlWallet() + "/{id}", walletDTO.getIdWallet())
+                .accept(MediaType.APPLICATION_JSON));
+
+        /////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////
+
+        logger.info("[TEST_DELETE_WALLET_BY_ID] - Process results...");
+
+        resultActions.andDo(print());
+        assertEquals(resultActions.andReturn().getResponse().getStatus(), HttpStatus.OK.value());
+    }
+
+
 }
 
 

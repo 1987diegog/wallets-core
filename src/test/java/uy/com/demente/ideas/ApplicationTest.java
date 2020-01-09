@@ -37,9 +37,9 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest(classes = WalletsApplication.class, //
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class WalletsApplicationTest {
+public class ApplicationTest {
 
-    private Logger logger = LogManager.getLogger(WalletsApplicationTest.class);
+    private Logger logger = LogManager.getLogger(ApplicationTest.class);
 
     @Autowired
     private UserService userService;

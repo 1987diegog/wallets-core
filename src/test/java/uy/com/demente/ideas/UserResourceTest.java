@@ -44,10 +44,10 @@ public class UserResourceTest {
 
     private MockMvc mockMvc;
     private ObjectMapper mapper;
-    private static Long idUser;
+    private static UserDTO userDTO;
 
-    public String getRootUrl() {
-        return "http://localhost:" + port + "/api/v1";
+    public String getRootUrlUser() {
+        return "http://localhost:" + port + "/api/v1/users";
     }
 
     @BeforeEach
@@ -87,7 +87,7 @@ public class UserResourceTest {
         logger.info("[TEST_CREATE_ORIGIN_USER] - Call mock mvc...");
 
         ResultActions resultActions = this.mockMvc.perform(MockMvcRequestBuilders
-                .post(getRootUrl() + "/users")
+                .post(getRootUrlUser())
                 .content(jsonContent)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON));
@@ -103,16 +103,15 @@ public class UserResourceTest {
 
         MvcResult result = resultActions.andReturn();
         String json = result.getResponse().getContentAsString();
-        UserDTO userCreated = mapper.readValue(json, UserDTO.class);
+        // I save the created object
+        userDTO = mapper.readValue(json, UserDTO.class);
 
-        // I save the id of the created object
-        idUser = userCreated.getIdUser();
-        logger.info("[TEST_CREATE_ORIGIN_USER] - Assigned id: " + userCreated.getIdUser());
+        logger.info("[TEST_CREATE_ORIGIN_USER] - Assigned id: " + userDTO.getIdUser());
 
         assertEquals(result.getResponse().getStatus(), HttpStatus.CREATED.value());
-        assertNotNull(userCreated);
-        assertEquals("Diego", userCreated.getName());
-        assertEquals("testUserOrigin@gmail.com", userCreated.getEmail());
+        assertNotNull(userDTO);
+        assertEquals("Diego", userDTO.getName());
+        assertEquals("testUserOrigin@gmail.com", userDTO.getEmail());
     }
 
     @Test
@@ -126,20 +125,17 @@ public class UserResourceTest {
         /////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////
 
-        logger.info("[TEST_UPDATE_USER_BY_ID] - Updating user data, id: " + idUser);
+        logger.info("[TEST_UPDATE_USER_BY_ID] - Updating user data, id: " + userDTO.getIdUser());
 
-        UserDTO user = new UserDTO();
+        userDTO.setName("Diego Andres");
+        userDTO.setLastName("Gonzalez Durand");
+        userDTO.setEmail("1987diegogTestUpdate@gmail.com");
+        userDTO.setStatus(Status.DISABLE.name());
+        userDTO.setUsername("1987diegogTestUpdate");
+        userDTO.setCellphone("+59899267337");
+        userDTO.setAge(30);
 
-        user.setIdUser(idUser);
-        user.setName("Diego Andres");
-        user.setLastName("Gonzalez Durand");
-        user.setEmail("1987diegogTestUpdate@gmail.com");
-        user.setStatus(Status.DISABLE.name());
-        user.setUsername("1987diegogTestUpdate");
-        user.setCellphone("+59899267337");
-        user.setAge(30);
-
-        String jsonContent = mapper.writeValueAsString(user);
+        String jsonContent = mapper.writeValueAsString(userDTO);
 
         /////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////
@@ -147,7 +143,7 @@ public class UserResourceTest {
         logger.info("[TEST_UPDATE_USER_BY_ID] - Call mock mvc...");
 
         ResultActions resultActions = this.mockMvc.perform(MockMvcRequestBuilders
-                .put(getRootUrl() + "/users")
+                .put(getRootUrlUser())
                 .content(jsonContent)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON));
@@ -163,12 +159,12 @@ public class UserResourceTest {
 
         MvcResult result = resultActions.andReturn();
         String json = result.getResponse().getContentAsString();
-        UserDTO userUpdated = mapper.readValue(json, UserDTO.class);
+        userDTO = mapper.readValue(json, UserDTO.class);
 
         assertEquals(result.getResponse().getStatus(), HttpStatus.OK.value());
-        assertNotNull(userUpdated);
-        assertEquals("Diego Andres", userUpdated.getName());
-        assertEquals("1987diegogTestUpdate@gmail.com", userUpdated.getEmail());
+        assertNotNull(userDTO);
+        assertEquals("Diego Andres", userDTO.getName());
+        assertEquals("1987diegogTestUpdate@gmail.com", userDTO.getEmail());
 
     }
 
@@ -186,7 +182,7 @@ public class UserResourceTest {
         logger.info("[TEST_FIND_USER_BY_ID] - Call mock mvc...");
 
         ResultActions resultActions = this.mockMvc.perform(MockMvcRequestBuilders
-                .get(getRootUrl() + "/users/{id}", idUser)
+                .get(getRootUrlUser() + "/{id}", userDTO.getIdUser())
                 .accept(MediaType.APPLICATION_JSON));
 
         /////////////////////////////////////////////////////////////////////////////
@@ -224,7 +220,7 @@ public class UserResourceTest {
         logger.info("[TEST_FIND_ALL_USERS] - Call mock mvc...");
 
         ResultActions resultActions = this.mockMvc.perform(MockMvcRequestBuilders
-                .get(getRootUrl() + "/users")
+                .get(getRootUrlUser())
                 .accept(MediaType.APPLICATION_JSON));
 
         /////////////////////////////////////////////////////////////////////////////
@@ -256,7 +252,7 @@ public class UserResourceTest {
         logger.info("[TEST_FIND_WALLETS_BY_USER] - Call mock mvc...");
 
         ResultActions resultActions = this.mockMvc.perform(MockMvcRequestBuilders
-                .get(getRootUrl() + "/users/{id}/wallets", idUser)
+                .get(getRootUrlUser() + "/{id}/wallets", userDTO.getIdUser())
                 .accept(MediaType.APPLICATION_JSON));
 
         /////////////////////////////////////////////////////////////////////////////
@@ -288,7 +284,7 @@ public class UserResourceTest {
         logger.info("[TEST_DELETE_USER_BY_ID] - Call mock mvc...");
 
         ResultActions resultActions = this.mockMvc.perform(MockMvcRequestBuilders
-                .delete(getRootUrl() + "/users/{id}", idUser)
+                .delete(getRootUrlUser() + "/{id}", userDTO.getIdUser())
                 .accept(MediaType.APPLICATION_JSON));
 
         /////////////////////////////////////////////////////////////////////////////
