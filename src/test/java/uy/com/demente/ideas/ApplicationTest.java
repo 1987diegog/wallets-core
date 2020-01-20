@@ -23,10 +23,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import org.springframework.web.client.RestTemplate;
 import uy.com.demente.ideas.wallets.WalletsApplication;
-import uy.com.demente.ideas.wallets.business.services.UserService;
+import uy.com.demente.ideas.wallets.services.UserService;
 import uy.com.demente.ideas.wallets.model.Status;
 import uy.com.demente.ideas.wallets.model.TypeCoin;
-import uy.com.demente.ideas.wallets.model.response.*;
+import uy.com.demente.ideas.wallets.dtos.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 

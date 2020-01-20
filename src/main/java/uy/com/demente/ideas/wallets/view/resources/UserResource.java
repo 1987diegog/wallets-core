@@ -18,14 +18,14 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import uy.com.demente.ideas.wallets.business.exceptions.InternalServerErrorException;
-import uy.com.demente.ideas.wallets.business.exceptions.NotFoundException;
-import uy.com.demente.ideas.wallets.business.exceptions.UserNotFoundException;
-import uy.com.demente.ideas.wallets.business.services.UserService;
-import uy.com.demente.ideas.wallets.business.services.WalletService;
-import uy.com.demente.ideas.wallets.model.response.ListUsersDTO;
-import uy.com.demente.ideas.wallets.model.response.ListWalletsDTO;
-import uy.com.demente.ideas.wallets.model.response.UserDTO;
+import uy.com.demente.ideas.wallets.exceptions.InternalServerErrorException;
+import uy.com.demente.ideas.wallets.exceptions.NotFoundException;
+import uy.com.demente.ideas.wallets.exceptions.UserNotFoundException;
+import uy.com.demente.ideas.wallets.services.UserService;
+import uy.com.demente.ideas.wallets.services.WalletService;
+import uy.com.demente.ideas.wallets.dtos.ListUsersDTO;
+import uy.com.demente.ideas.wallets.dtos.ListWalletsDTO;
+import uy.com.demente.ideas.wallets.dtos.UserDTO;
 
 import javax.validation.Valid;
 

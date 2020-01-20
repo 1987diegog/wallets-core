@@ -8,9 +8,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.BeanUtils;
 
-import uy.com.demente.ideas.wallets.model.response.TransferDTO;
-import uy.com.demente.ideas.wallets.model.response.UserDTO;
-import uy.com.demente.ideas.wallets.model.response.WalletDTO;
+import uy.com.demente.ideas.wallets.dtos.TransferDTO;
+import uy.com.demente.ideas.wallets.dtos.UserDTO;
+import uy.com.demente.ideas.wallets.dtos.WalletDTO;
 import uy.com.demente.ideas.wallets.model.Transfer;
 import uy.com.demente.ideas.wallets.model.User;
 import uy.com.demente.ideas.wallets.model.Wallet;

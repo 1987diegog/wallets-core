@@ -26,11 +26,11 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import uy.com.demente.ideas.wallets.business.exceptions.*;
-import uy.com.demente.ideas.wallets.business.services.SecurityService;
-import uy.com.demente.ideas.wallets.business.services.TransferService;
-import uy.com.demente.ideas.wallets.model.response.ListTransfersDTO;
-import uy.com.demente.ideas.wallets.model.response.TransferDTO;
+import uy.com.demente.ideas.wallets.exceptions.*;
+import uy.com.demente.ideas.wallets.services.SecurityService;
+import uy.com.demente.ideas.wallets.services.TransferService;
+import uy.com.demente.ideas.wallets.dtos.ListTransfersDTO;
+import uy.com.demente.ideas.wallets.dtos.TransferDTO;
 
 /**
  * @author 1987diegog

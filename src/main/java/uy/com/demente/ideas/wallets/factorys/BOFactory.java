@@ -1,7 +1,6 @@
 package uy.com.demente.ideas.wallets.factorys;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -10,9 +9,9 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.BeanUtils;
 
 import uy.com.demente.ideas.wallets.model.*;
-import uy.com.demente.ideas.wallets.model.response.TransferDTO;
-import uy.com.demente.ideas.wallets.model.response.UserDTO;
-import uy.com.demente.ideas.wallets.model.response.WalletDTO;
+import uy.com.demente.ideas.wallets.dtos.TransferDTO;
+import uy.com.demente.ideas.wallets.dtos.UserDTO;
+import uy.com.demente.ideas.wallets.dtos.WalletDTO;
 import uy.com.demente.ideas.wallets.utils.HashKeyUtil;
 
 /**

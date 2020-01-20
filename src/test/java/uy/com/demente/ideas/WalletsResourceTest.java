@@ -21,12 +21,9 @@ import org.springframework.web.context.WebApplicationContext;
 import uy.com.demente.ideas.wallets.WalletsApplication;
 import uy.com.demente.ideas.wallets.model.Status;
 import uy.com.demente.ideas.wallets.model.TypeCoin;
-import uy.com.demente.ideas.wallets.model.Wallet;
-import uy.com.demente.ideas.wallets.model.response.ListUsersDTO;
-import uy.com.demente.ideas.wallets.model.response.ListWalletsDTO;
-import uy.com.demente.ideas.wallets.model.response.UserDTO;
-import uy.com.demente.ideas.wallets.model.response.WalletDTO;
-import uy.com.demente.ideas.wallets.view.resources.WalletResource;
+import uy.com.demente.ideas.wallets.dtos.ListWalletsDTO;
+import uy.com.demente.ideas.wallets.dtos.UserDTO;
+import uy.com.demente.ideas.wallets.dtos.WalletDTO;
 
 import java.math.BigDecimal;
 
