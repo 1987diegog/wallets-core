@@ -148,6 +148,7 @@ public class DTOFactory {
             transferDTO.setTypeCoin(transfer.getTypeCoin().name());
             transferDTO.setOriginWallet(transfer.getOriginWallet().getHash());
             transferDTO.setDestinationWallet(transfer.getDestinationWallet().getHash());
+            transferDTO.setCreatedAt(transfer.getCreatedAt());
         }
 
         return transferDTO;

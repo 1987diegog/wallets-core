@@ -113,6 +113,22 @@ public class Transfer implements Serializable {
 		this.destinationWallet = destinationWallet;
 	}
 
+	public Date getCreatedAt() {
+		return createdAt;
+	}
+
+	public void setCreatedAt(Date createdAt) {
+		this.createdAt = createdAt;
+	}
+
+	public Date getUpdatedAt() {
+		return updatedAt;
+	}
+
+	public void setUpdatedAt(Date updatedAt) {
+		this.updatedAt = updatedAt;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;

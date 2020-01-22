@@ -152,22 +152,13 @@ public class WalletService {
      * @throws BussinesServiceException
      */
     public WalletDTO findByHash(String hash) throws WalletNotFoundException, BussinesServiceException {
+
         logger.info("[WALLET_FIND_BY_HASH] - Start, searching wallet...");
-        try {
-            Wallet wallet = this.walletRepository.findByHash(hash);
-            if (wallet != null) {
-                return DTOFactory.create(wallet);
-            } else {
-                throw new WalletNotFoundException("Wallet not found, hash: " + hash);
-            }
-        } catch (WalletNotFoundException e) {
-            logger.info("[WALLET_FIND_BY_HASH] [NOT_FOUND] - Wallet not found, hash: " + hash);
-            throw e;
-        } catch (Exception e) {
-            logger.error("[WALLET_FIND_BY_HASH] [ERROR] - An error occurred while trying to find " +
-                    "a wallet by hash: " + hash, e);
-            throw new BussinesServiceException("An error occurred while trying to find a wallet by hash: " + hash, e);
-        }
+        return this.walletRepository.findByHash(hash).map(DTOFactory::create)
+                .orElseThrow(() -> {
+                    logger.info("[WALLET_FIND_BY_HASH] [NOT_FOUND] - Wallet not found, hash: " + hash);
+                    return new WalletNotFoundException("Wallet not found, hash: " + hash);
+                });
     }
 
     /**

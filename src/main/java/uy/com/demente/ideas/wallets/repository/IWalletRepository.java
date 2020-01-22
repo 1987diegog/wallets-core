@@ -1,6 +1,7 @@
 package uy.com.demente.ideas.wallets.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -26,6 +27,6 @@ public interface IWalletRepository extends JpaRepository<Wallet, Long> {
 	 * @param hash
 	 * @return
 	 */
-	Wallet findByHash(String hash);
+	Optional<Wallet> findByHash(String hash);
 
 }

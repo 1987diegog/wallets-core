@@ -115,7 +115,7 @@ public class TransferService {
         ///////////////// - TYPE COIN - /////////////////
         /////////////////////////////////////////////////
 
-        if(TypeCoin.get(typeCoin) == null) {
+        if (TypeCoin.get(typeCoin) == null) {
             logger.info("[VALIDATE_TRANSFER] - The type of currency does not exist");
             throw new TypeCoinException("The type of currency does not exist");
         }
@@ -278,24 +278,10 @@ public class TransferService {
      * @param hash
      * @return
      * @throws TransferNotFoundException
-     * @throws BussinesServiceException
      */
-    private Wallet getWalletByHash(String hash) throws WalletNotFoundException, BussinesServiceException {
-        try {
-            Wallet wallet = this.walletRepository.findByHash(hash);
-            if (wallet == null) {
-                logger.info("[GET_WALLET_BY_HASH] [ERROR] - Wallet not found, hash: " + hash);
-                throw new WalletNotFoundException("Wallet not found, hash: " + hash);
-            }
-            return wallet;
-        } catch (WalletNotFoundException e) {
-            throw e;
-        } catch (Exception e) {
-            logger.error("[GET_WALLET_BY_HASH] [ERROR] - An error occurred while trying to get " +
-                    "the wallet with hash: " + hash, e);
-            throw new BussinesServiceException("An error occurred while trying to get " +
-                    "the wallet with hash: " + hash, e);
-        }
+    private Wallet getWalletByHash(String hash) throws WalletNotFoundException {
+        return walletRepository.findByHash(hash).orElseThrow(() ->
+                new WalletNotFoundException("Wallet not found, hash: " + hash));
     }
 
     /**
@@ -339,30 +325,38 @@ public class TransferService {
      *
      * @param fromDate
      * @param toDate
-     * @param originWallet
+     * @param hashOriginWallet
      * @return
      * @throws WalletNotFoundException
      * @throws BussinesServiceException
      */
-    private List<Transfer> getTransferByFilter(Date fromDate, Date toDate, Optional<String> originWallet)
+    private List<Transfer> getTransferByFilter(Date fromDate, Date toDate, Optional<String> hashOriginWallet)
             throws WalletNotFoundException, BussinesServiceException {
         try {
             List<Transfer> listTransfer = new ArrayList<Transfer>();
-            if (originWallet.isPresent()) {
+            if (hashOriginWallet.isPresent()) {
                 logger.info("[TRANSFER_FIND_BY_FILTER] - Query params - from timestamp: " + fromDate.toString()
-                        + ", to timestamp: " + toDate.toString() + ", hash origin wallet: " + originWallet.get());
-                Wallet wallet = walletRepository.findByHash(originWallet.get());
-                if (wallet != null) {
-                    listTransfer = this.transferRepository.findByFilter(fromDate, toDate, wallet);
-                } else {
-                    logger.info("[TRANSFER_FIND_BY_FILTER] - Hash wallet not found: " + originWallet.get());
-                    // return empty list...
-                    throw new WalletNotFoundException("Hash wallet not found: " + originWallet.get());
-                }
+                        + ", to timestamp: " + toDate.toString() + ", hash origin wallet: " + hashOriginWallet.get());
+
+//                Wallet wallet = walletRepository.findByHash(hashOriginWallet.get());
+//                if (wallet != null) {
+//                    listTransfer = this.transferRepository.findByFilter(fromDate, toDate, wallet);
+//                } else {
+//                    logger.info("[TRANSFER_FIND_BY_FILTER] - Hash wallet not found: " + hashOriginWallet.get());
+//                     return empty list...
+//                    throw new WalletNotFoundException("Hash wallet not found: " + hashOriginWallet.get());
+//                }
+
+                Wallet wallet = this.walletRepository.findByHash(hashOriginWallet.get())
+                        .orElseThrow(() -> {
+                            logger.info("[TRANSFER_FIND_BY_FILTER] - Hash wallet not found: " + hashOriginWallet.get());
+                            return new WalletNotFoundException("Hash wallet not found: " + hashOriginWallet.get());
+                        });
+
+                listTransfer = transferRepository.findByFilter(fromDate, toDate, wallet);
             } else {
                 logger.info("[TRANSFER_FIND_BY_FILTER] - Query params - from timestamp: " + fromDate.toString()
                         + ", to timestamp: " + toDate.toString());
-//                listTransfer = this.transferRepository.findByFilter(fromDate, toDate);
                 listTransfer = this.transferRepository.findByCreatedAtBetween(fromDate, toDate);
             }
             return listTransfer;
