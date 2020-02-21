@@ -2,6 +2,8 @@ package uy.com.demente.ideas.wallets.configurations;
 
 /**
  * @author 1987diegog
+ *
+ *
  */
 //@Configuration
 //@EnableWebSecurity

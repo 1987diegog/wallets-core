@@ -348,10 +348,7 @@ public class TransferService {
 //                }
 
                 Wallet wallet = this.walletRepository.findByHash(hashOriginWallet.get())
-                        .orElseThrow(() -> {
-                            logger.info("[TRANSFER_FIND_BY_FILTER] - Hash wallet not found: " + hashOriginWallet.get());
-                            return new WalletNotFoundException("Hash wallet not found: " + hashOriginWallet.get());
-                        });
+                        .orElseThrow(() -> new WalletNotFoundException("Hash wallet not found: " + hashOriginWallet.get()));
 
                 listTransfer = transferRepository.findByFilter(fromDate, toDate, wallet);
             } else {
